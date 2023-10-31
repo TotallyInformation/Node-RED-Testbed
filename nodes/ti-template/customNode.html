@@ -1,0 +1,95 @@
+<link type="text/css" rel="stylesheet" href="./resources/@totallyinformation/node-red-testbed/ti-common.css" media="all"><script src="./resources/@totallyinformation/node-red-testbed/ti-common.js"></script><script type="text/html" class="ti-tooltip" data-template-name="ti-template"><div id="ti-edit-panel">
+  
+    <div aria-label="Default msg topic. Make unique if using uib-cache." class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic">
+    </div>
+    <div aria-label="Node name (descriptive only)" class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+</div></script><script type="text/html" data-help-name="ti-template"><p>
+    Template for Totally Information's Testbed nodes
+</p>
+
+<h3>Inputs</h3>
+<dl class="message-properties">
+    <dt class="optional">topic <span class="property-type">string</span></dt>
+    <dd>
+        Passed through if provided.
+    </dd>
+</dl>
+
+<h3>Outputs</h3>
+<dl class="message-properties">
+    <dt>payload <span class="property-type">string</span></dt>
+    <dd>
+        The payload
+    </dd>
+
+    <dt>topic <span class="property-type">string</span></dt>
+    <dd>
+        The input topic.
+    </dd>
+</dl>
+
+<h3>Node Settings</h3>
+<dl class="message-properties">
+    <dt class="optional">Name <span class="property-type">string</span></dt>
+    <dd>
+        Optional short description shown in the admin interface
+    </dd>
+
+    <dt>Topic <span class="property-type">string</span></dt>
+    <dd>
+        Fixed topic string. Only used if the input <code>msg</code> does not
+        contain a <code>topic</code> property.
+    </dd>
+</dl></script><script type="text/javascript">// Isolate this code
+    ;(function () {
+        'use strict'
+    
+        /** Module name must match this nodes html file @constant {string} moduleName */
+        const moduleName = 'ti-template'
+        /** Node's label @constant {string} paletteCategory */
+        const nodeLabel = moduleName
+        /** Node's palette category @constant {string} paletteCategory */
+        const paletteCategory = 'TI Testing'
+        /** Node's background color @constant {string} paletteColor */
+        const paletteColor = 'var(--ti-testing-node-colour)'
+    
+        // Standard width for typed input fields
+        // const tiWidth = '68.5%'
+    
+        /** Prep for edit
+         * @param {*} node A node instance as seen from the Node-RED Editor
+         */
+        function onEditPrepare(node) {
+            window['tiDoTooltips']('#ti-edit-panel') // Do this at the end
+        } // ----- end of onEditPrepare() ----- //
+    
+        // @ts-ignore
+        RED.nodes.registerType(moduleName, {
+            category: paletteCategory,
+            color: paletteColor,
+            defaults: {
+                name: { value: '' },
+                topic: { value: '' },
+            },
+            align: 'left',
+            inputs: 1,
+            inputLabels: 'Some Input',
+            outputs: 1,
+            outputLabels: ['Output 1'],
+            icon: 'font-awesome/fa-code',
+            paletteLabel: nodeLabel,
+            label: function () {
+                return this.name || moduleName
+            },
+    
+            /** Prepares the Editor panel */
+            oneditprepare: function () { onEditPrepare(this) },
+        }) // ---- End of registerType() ---- //
+    
+    }())</script>

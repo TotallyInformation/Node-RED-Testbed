@@ -1,0 +1,19 @@
+/**
+ * CSS Resource file for @totallyinformation/node-redtestbed
+ *
+ * Load as: ./resources/@totallyinformation/node-red-testbed/ti-testbed.css
+ */
+
+:root {
+    --ti-testing-node-colour: hsl(256, 50%, 80%)
+}
+
+#ti-test {
+    color: hsl(256, 50%, 80%);
+}
+
+/* --- Better tooltips --- */
+.ui-tooltip {
+    background-color: var(--red-ui-popover-background);
+    color: var(--red-ui-popover-color);
+}
