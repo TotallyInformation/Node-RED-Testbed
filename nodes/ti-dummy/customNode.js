@@ -25,6 +25,9 @@
 
 //#region ----- Module level variables ---- //
 
+// Uncomment this if you want to use the promisified version of evaluateNodeProperty
+// const { promisify } = require('util')
+
 /** Main (module) variables - acts as a configuration object
  *  that can easily be passed around.
  */
@@ -32,7 +35,7 @@ const mod = {
     /** @type {runtimeRED|undefined} Reference to the master RED instance */
     RED: undefined,
     /** @type {Function|undefined} Reference to a promisified version of RED.util.evaluateNodeProperty*/
-    evaluateNodeProperty: undefined,
+    // evaluateNodeProperty: undefined,
     /** @type {string} Custom Node Name - has to match with html file and package.json `red` section */
     nodeName: 'ti-dummy', // <== CHANGE
 }
@@ -93,6 +96,9 @@ function ModuleDefinition(RED) {
 
     // Save a reference to the RED runtime for convenience
     mod.RED = RED
+
+    // Save a ref to a promisified version to simplify async callback handling
+    // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
 
     /** Register a new instance of the specified node type (2) */
     RED.nodes.registerType(mod.nodeName, nodeInstance)
