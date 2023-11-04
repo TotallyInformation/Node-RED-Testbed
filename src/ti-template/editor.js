@@ -2,22 +2,26 @@
 ;(function () {
     'use strict'
 
+    // const log = window['uibuilder'].log
+
     /** Module name must match this nodes html file @constant {string} moduleName */
     const moduleName = 'ti-template'
     /** Node's label @constant {string} paletteCategory */
     const nodeLabel = moduleName
     /** Node's palette category @constant {string} paletteCategory */
-    const paletteCategory = 'TI Testing'
+    const paletteCategory = window['tiTestbed'].paletteCategory
     /** Node's background color @constant {string} paletteColor */
-    const paletteColor = 'var(--ti-testing-node-colour)'
+    const paletteColor = 'var(--ti-testbed-node-colour)'
 
     // Standard width for typed input fields
-    // const tiWidth = '68.5%'
+    // const tiWidth = window['tiTestbed'].typedInputWidth
 
     /** Prep for edit
      * @param {*} node A node instance as seen from the Node-RED Editor
      */
     function onEditPrepare(node) {
+        // log.log('onEditPrepare', node)
+
         window['tiDoTooltips']('#ti-edit-panel') // Do this at the end
     } // ----- end of onEditPrepare() ----- //
 

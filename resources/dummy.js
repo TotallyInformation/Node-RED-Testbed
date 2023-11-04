@@ -2,7 +2,7 @@
 ;(function () {
     'use strict'
 
-    console.log(window['tiTestbed'])
+    // RED._debug({topic: 'RED.settings', payload:RED.settings})
 
     const log = window['uibuilder'].log
 
