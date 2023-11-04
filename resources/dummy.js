@@ -19,7 +19,7 @@
     function onEditPrepare(node) {
         // log.log('onEditPrepare', node)
 
-        window['tiDoTooltips']('#ti-edit-panel') // Do this at the end
+        tiTestbed.doTooltips('#ti-edit-panel') // Do this at the end
     } // ----- end of onEditPrepare() ----- //
 
     // @ts-ignore
