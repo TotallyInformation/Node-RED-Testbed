@@ -13,6 +13,17 @@
     // Standard width for typed input fields
     // const tiWidth = tiTestbed.typedInputWidth
 
+    // Note that a cancelled or undone paste will trigger and add followed by a delete
+    RED.events.on('ti-testbed:ti-dummy-node-added', (node) => {
+        console.log('[dummy] ti-testbed:ti-dummy-node-added was fired', node)
+    })
+    RED.events.on('ti-testbed:ti-dummy-node-changed', (node) => {
+        console.log('[dummy] ti-testbed:ti-dummy-node-changed was fired', node)
+    })
+    RED.events.on('ti-testbed:ti-common-node-deleted', (node) => {
+        console.log('[dummy] ti-testbed:ti-dummy-node-deleted was fired', node)
+    })
+
     /** Validate the topic input - this is called on Editor load as well as on change
      * @param {*} value The input value to be validated
      * @returns {boolean} True if valid

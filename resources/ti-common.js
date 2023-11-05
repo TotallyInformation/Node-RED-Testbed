@@ -53,21 +53,29 @@
         tiTestbed.log('[tiTestbed] DEBUG ON (because running on localhost)')
 
         //#region Track Editor changes
+        // WARNING: nodes:add fires at paste - but escape will cancel and not actually add the node
         RED.events.on('nodes:add', function(node) {
             if ( node.type === 'ti-dummy') {
-                tiTestbed.log('[tiTestbed] dummy node added:', node)
+                if (node.changed === false && !('moved' in node)) node.addType = 'load'
+                else if (!('_config' in node)) node.addType = 'new'
+                else if (node.changed === true && ('_config' in node)) node.addType = 'paste/import'
+                RED.events.emit('ti-testbed:ti-dummy-node-added', node)
+                tiTestbed.log('[tiTestbed] ', `\n_Config? '${'_config' in node}'`, `\nl? '${node.l}'`, `\nmoved? '${node.moved}'`, `\nchanged? '${node.changed}'`, node)
             }
         })
         RED.events.on('nodes:change', function(node) {
             if ( node.type === 'ti-dummy') {
+                delete node.addType
                 tiTestbed.log('[tiTestbed] dummy node changed:', node)
+                RED.events.emit('ti-testbed:ti-dummy-node-changed', node)
             }
         })
-        // RED.events.on('nodes:remove', function(node) {
-        //     if ( node.type === 'dummy') {
-        //         tiTestbed.log('[tiTestbed] dummy node removed: ', node)
-        //     }
-        // })
+        RED.events.on('nodes:remove', function(node) {
+            if ( node.type === 'ti-dummy') {
+                tiTestbed.log('[tiTestbed] dummy node removed: ', node)
+                RED.events.emit('ti-testbed:ti-dummy-node-removed', node)
+            }
+        })
         // RED.events.on('deploy', function() {
         //     tiTestbed.log('[tiTestbed] Deployed')
         // })
@@ -78,6 +86,8 @@
         //     tiTestbed.log('[tiTestbed] Runtime State:', event)
         // })
         //#endregion
+
+        RED.events.emit('ti-testbed:ti-common-run', {'some': 'data'})
 
         /** If debug, dump out key information to console */
         if (tiTestbed.debug === true) {
