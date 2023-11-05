@@ -56,9 +56,17 @@
         // WARNING: nodes:add fires at paste - but escape will cancel and not actually add the node
         RED.events.on('nodes:add', function(node) {
             if ( node.type === 'ti-dummy') {
+                // Track what type of addition this is
                 if (node.changed === false && !('moved' in node)) node.addType = 'load'
                 else if (!('_config' in node)) node.addType = 'new'
                 else if (node.changed === true && ('_config' in node)) node.addType = 'paste/import'
+                // Example of changing/deleting a property on paste or import
+                if (node.addType === 'paste/import') {
+                    delete node.name
+                    // We have to change this if we want the display version to change (if the prop is part of the label)
+                    delete node._config.name
+                }
+                // Inform interested functions that something was added (and why)
                 RED.events.emit('ti-testbed:ti-dummy-node-added', node)
                 // tiTestbed.log('[tiTestbed] ', `\n_Config? '${'_config' in node}'`, `\nl? '${node.l}'`, `\nmoved? '${node.moved}'`, `\nchanged? '${node.changed}'`, node)
             }
