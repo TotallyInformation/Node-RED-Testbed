@@ -53,29 +53,29 @@
         tiTestbed.log('[tiTestbed] DEBUG ON (because running on localhost)')
 
         //#region Track Editor changes
-        // RED.events.on('nodes:add', function(node) {
-        //     if ( node.type === 'dummy') {
-        //         // uibuilder.log('[tiTestbed] dummy node added:', node)
-        //     }
-        // })
-        // RED.events.on('nodes:change', function(node) {
-        //     if ( node.type === 'dummy') {
-        //         tiTestbed.log('[tiTestbed] dummy node changed:', node)
-        //     }
-        // })
+        RED.events.on('nodes:add', function(node) {
+            if ( node.type === 'ti-dummy') {
+                tiTestbed.log('[tiTestbed] dummy node added:', node)
+            }
+        })
+        RED.events.on('nodes:change', function(node) {
+            if ( node.type === 'ti-dummy') {
+                tiTestbed.log('[tiTestbed] dummy node changed:', node)
+            }
+        })
         // RED.events.on('nodes:remove', function(node) {
         //     if ( node.type === 'dummy') {
         //         tiTestbed.log('[tiTestbed] dummy node removed: ', node)
         //     }
         // })
         // RED.events.on('deploy', function() {
-        //     console.log('[tiTestbed] Deployed')
+        //     tiTestbed.log('[tiTestbed] Deployed')
         // })
         // RED.events.on('workspace:dirty', function(data) {
-        //     console.log('[tiTestbed] Workspace dirty:', data)
+        //     tiTestbed.log('[tiTestbed] Workspace dirty:', data)
         // })
         // RED.events.on('runtime-state', function(event) {
-        //     console.log('[tiTestbed] Runtime State:', event)
+        //     tiTestbed.log('[tiTestbed] Runtime State:', event)
         // })
         //#endregion
 

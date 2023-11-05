@@ -13,6 +13,15 @@
     // Standard width for typed input fields
     // const tiWidth = tiTestbed.typedInputWidth
 
+    /** Validate the topic input - this is called on Editor load as well as on change
+     * @param {*} value The input value to be validated
+     * @returns {boolean} True if valid
+     */
+    function validateTopic(value) {
+        // log('validateTopic function called')
+        return true
+    }
+
     /** Prep for edit
      * @param {*} node A node instance as seen from the Node-RED Editor
      */
@@ -24,9 +33,10 @@
 
     // @ts-ignore
     RED.nodes.registerType(moduleName, {
+        // NOTE: Validations are called on Editor load, not just on change
         defaults: {
             name: { value: '' },
-            topic: { value: '' },
+            topic: { value: '', validate: validateTopic },
         },
         align: 'left',
         inputs: 1,
