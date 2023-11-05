@@ -44,6 +44,30 @@ const mod = {
 
 //#region ----- Module-level support functions ----- //
 
+/**
+ * Examine the RED object's top-2 levels of properties
+ * @param {object} RED The RED global object
+ */
+function whatIsRED(RED) {
+    console.groupCollapsed('KEYs of RED')
+    Object.keys(RED).forEach( key => {
+        console.log(`${key}: `, Object.keys(RED[key]))
+    })
+    console.groupEnd()
+}
+
+/**
+ * Examine the node instance object's top-2 levels of properties
+ * @param {runtimeNode & tiDummyNode} node The RED global object
+ */
+function whatIsThis(node) {
+    console.groupCollapsed('KEYs of NODE')
+    Object.keys(node).forEach( key => {
+        console.log(`${key}: `, Object.keys(node[key]))
+    })
+    console.groupEnd()
+}
+
 /** 3) Run whenever a node instance receives a new input msg
  * NOTE: `this` context is still the parent (nodeInstance).
  * See https://nodered.org/blog/2019/09/20/node-done
@@ -81,6 +105,12 @@ function nodeInstance(config) {
     /** Transfer config items from the Editor panel to the runtime */
     this.name = config.name ?? ''
     this.topic = config.topic ?? ''
+
+    // Include this if you want to examine the RED object's keys
+    // whatIsRED(RED)
+
+    // Include this if you want to examine the node instance object's keys
+    // whatIsThis(this)
 
     /** Handle incoming msg's - note that the handler fn inherits `this` */
     this.on('input', inputMsgHandler)
