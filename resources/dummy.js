@@ -15,7 +15,7 @@
 
     // Note that a cancelled or undone paste will trigger and add followed by a delete
     RED.events.on('ti-testbed:ti-dummy-node-added', (node) => {
-        console.log('[dummy] ti-testbed:ti-dummy-node-added was fired', node)
+        console.log('[dummy] ti-testbed:ti-dummy-node-added was fired', node, this)
     })
     RED.events.on('ti-testbed:ti-dummy-node-changed', (node) => {
         console.log('[dummy] ti-testbed:ti-dummy-node-changed was fired', node)
@@ -65,9 +65,14 @@
         /** Prepares the Editor panel */
         oneditprepare: function () { onEditPrepare(this) },
 
-        /** Runs before save (Actually when Done button pressed) - oneditsave */
-        /** Runs before cancel - oneditcancel */
-        /** Handle window resizing for the editor - oneditresize */
-        /** Show notification warning before allowing delete - oneditdelete */
+        /** Available methods:
+         * oneditprepare: (function) called when the edit dialog is being built.
+         * oneditsave:   (function) called when the edit Done button pressed - before save happens.
+         * oneditcancel: (function) called when the edit Cancel button pressed - before cancel happens.
+         * oneditdelete: (function) called when the delete button in a configuration node’s edit dialog is pressed - before delete.
+         * oneditresize: (function) called when the edit dialog is resized.
+         * onpaletteadd: (function) called when the node type is added to the palette.
+         * onpaletteremove: (function) called when the node type is removed from the palette.
+         */
     }) // ---- End of registerType() ---- //
 }())
