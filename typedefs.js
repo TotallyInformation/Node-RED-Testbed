@@ -240,6 +240,21 @@
  *
  * @property {string} name Descriptive name, only used by Editor
  * @property {string} topic msg.topic overrides incoming msg.topic
+ * @property {string} tyiMsg Set by call to getSource
+ * @property {string} tyiMsgSource = config.tyiMsg ?? ''
+ * @property {string} tyiMsgSourceType = config.tyiMsgSourceType ?? ''
+ * @property {string} tyiGlobal Set by call to getSource
+ * @property {string} tyiGlobalSource = config.tyiGlobal ?? ''
+ * @property {string} tyiGlobalSourceType = config.tyiGlobalSourceType ?? ''
+ * @property {string} tyiEnv Set by call to getSource
+ * @property {string} tyiEnvSource = config.tyiEnv ?? ''
+ * @property {string} tyiEnvSourceType = config.tyiEnvSourceType ?? ''
+ * @property {string} tyiExpr Set by call to getSource
+ * @property {string} tyiExprSource = config.tyiExpr ?? ''
+ * @property {string} tyiExprSourceType = config.tyiExprSourceType ?? ''
+ * @property {string} tyiNode Set by call to getSource
+ * @property {string} tyiNodeSource = config.tyiExpr ?? ''
+ * @property {string} tyiNodeSourceType = config.tyiExprSourceType ?? ''
  */
 
 /** Props define attributes on a virtual node.
