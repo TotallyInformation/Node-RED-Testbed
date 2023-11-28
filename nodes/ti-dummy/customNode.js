@@ -27,6 +27,7 @@
 
 // Uncomment this if you want to use the promisified version of evaluateNodeProperty
 // const { promisify } = require('util')
+const { getSource } = require('../libs/uiblib')
 
 /** Main (module) variables - acts as a configuration object
  *  that can easily be passed around.
@@ -78,12 +79,31 @@ function whatIsThis(node) {
  */
 async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
 
-    // const RED = mod.RED
+    const RED = mod.RED
+
+    // Get all of the typed input values (in parallel)
+    // Any dynamic type might have changed between deployment and msg receipt
+    await Promise.all([
+        getSource('tyiMsg', this, msg, RED),
+        getSource('tyiGlobal', this, msg, RED),
+        getSource('tyiEnv', this, msg, RED),
+        getSource('tyiExpr', this, msg, RED), // contains core data
+        getSource('tyiNode', this, msg, RED), // contains core data
+    ])
+
+    msg.tyiMsg = this.tyiMsg
+    msg.tyiGlobal = this.tyiGlobal
+    msg.tyiEnv = this.tyiEnv
+    msg.tyiExpr = this.tyiExpr
+    msg.tyiNode = this.tyiNode
+
+    const that = this
+    console.log({ that })
 
     // Pass straight through
     send(msg)
 
-    // We are done - not really needed probably
+    // We are done - Needed because we are async
     done()
 } // ----- end of inputMsgHandler ----- //
 
@@ -105,6 +125,21 @@ function nodeInstance(config) {
     /** Transfer config items from the Editor panel to the runtime */
     this.name = config.name ?? ''
     this.topic = config.topic ?? ''
+
+    // Example typed input fields
+    this.tyiMsgSource = config.tyiMsg ?? ''
+    this.tyiMsgSourceType = config.tyiMsgSourceType ?? ''
+    this.tyiGlobalSource = config.tyiGlobal ?? ''
+    this.tyiGlobalSourceType = config.tyiGlobalSourceType ?? ''
+    this.tyiEnvSource = config.tyiEnv ?? ''
+    this.tyiEnvSourceType = config.tyiEnvSourceType ?? ''
+    this.tyiExprSource = config.tyiExpr ?? ''
+    this.tyiExprSourceType = config.tyiExprSourceType ?? ''
+    this.tyiNodeSource = config.tyiNode ?? ''
+    this.tyiNodeSourceType = config.tyiNodeSourceType ?? ''
+
+    // Any dynamic type might have changed between deployment and msg receipt
+    // So we don't get them here. Though static ones could be (string, number, json, bool)
 
     // Include this if you want to examine the RED object's keys
     // whatIsRED(RED)
