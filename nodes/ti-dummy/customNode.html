@@ -8,6 +8,38 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name">
     </div>
+    
+    <hr>
+
+    <fieldset>
+        <legend>Typed Inputs</legend>
+
+        <div aria-label="Returns the value of a msg property" class="form-row">
+            <label for="node-input-tyiMsg"><i class="fa fa-tag"></i> Msg</label>
+            <input type="text" id="node-input-tyiMsg"  placeholder="Provide a msg property name">
+            <input type="hidden" id="node-input-tyiMsgSourceType">
+        </div>
+        <div aria-label="Returns the value of a global variable" class="form-row">
+            <label for="node-input-tyiGlobal"><i class="fa fa-tag"></i> Global</label>
+            <input type="text" id="node-input-tyiGlobal">
+            <input type="hidden" id="node-input-tyiGlobalSourceType">
+        </div>
+        <div aria-label="Returns the value of an environment variable" class="form-row">
+            <label for="node-input-tyiEnv"><i class="fa fa-tag"></i> Env</label>
+            <input type="text" id="node-input-tyiEnv">
+            <input type="hidden" id="node-input-tyiEnvSourceType">
+        </div>
+        <div aria-label="Returns the output of a JSONata expression" class="form-row">
+            <label for="node-input-tyiExpr"><i class="fa fa-tag"></i> JSONata</label>
+            <input type="text" id="node-input-tyiExpr">
+            <input type="hidden" id="node-input-tyiExprSourceType">
+        </div>
+        <div aria-label="Returns the Node ID of the selected node. Use ... to select a node" class="form-row">
+            <label for="node-input-tyiNode"><i class="fa fa-tag"></i> Node ID</label>
+            <input type="text" id="node-input-tyiNode">
+            <input type="hidden" id="node-input-tyiNodeSourceType">
+        </div>
+    </fieldset>
 
 </div></script><script type="text/html" data-help-name="ti-dummy"><p>
     Dummy node for experimentation
