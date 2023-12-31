@@ -5,21 +5,24 @@ A blank canvas to test out ideas for Node-RED custom nodes
 
 Please note that this is serious overkill for simple custom nodes, it embodies my workflow for my nodes which includes a few things you might find complex until you've used them and realise the value. They really come into their own for more complex nodes.
 
-- The node's HTML file is not edited directly, see the `src` folder where you will find 5 files for each node.
+- The node's HTML file is not edited directly, see the `src` folder where you will find 3 files for each node.
 
-   `main.html` provides the structure. It has the usual 3 sections for help, the config panel and the JS code. However, it also loads two common resources, a CSS stylesheet and a JS file containing utility functions.
+   `main.html` provides the structure. It has only 2 instead of the usual 3 sections for help, and the config panel (the JS code has been removed, see below). However, it also loads two common resources, a CSS stylesheet and a JS file containing utility functions.
 
-   `template.html` is the definition of the Editor configuration panel.
+   `panel.html` is the definition of the Editor configuration panel.
 
    `help.html` is the help panel
-
-   `editor.js` is obviously the script. This uses an isolation IIFE and puts some common variables up front. It also demonstrates the correct way to call a separate function for things like `oneditprepare` so that you can keep your code clean and easy to parse. It also includes nicer tooltips for your config panel.
-
-   `.eslintrc.js` is purely there to have a good baseline for LINTing your code to get standard formatted code and to help eliminate trivial errors. 
 
    To get the output html file, you firstly need to run `gulp` from a command line in the packages root folder. See `gulpfile.js`. The default gulp function is set to `watchme` which watches for file changes and runs the appropriate build that merges the files, minifies, and outputs to the correct live folder.
 
    While this process seems complex and does take a bit of setting up for each node, editing the Editor parts of your node become soooo much easier which reduces thinking time and errors.
+
+   **NOTE**
+
+   The JavaScript for the node's Editor panel is no longer built into the HTML file. It is now found in the `/resources/` folder with a name that matches the node-name but ending in `.js`. This makes it much easier to make changes to the processing of the edit panel.
+
+   This uses an isolation IIFE and puts some common variables up front. It also demonstrates the correct way to call a separate function for things like `oneditprepare` so that you can keep your code clean and easy to parse. It also includes nicer tooltips for your config panel.
+
 
 * Each node's runtime will also look a little different. That is because I've deconstructed the parts that make up the runtime component. 
 
