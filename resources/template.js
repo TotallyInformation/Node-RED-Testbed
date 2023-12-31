@@ -41,6 +41,10 @@
 
         /** Prepares the Editor panel */
         oneditprepare: function () { onEditPrepare(this) },
+        /** Alternatively, bind `this` so you don't need to pass as an arg.
+         *  Then use `this` instead of `node` in the onEditPrepare function.
+         */
+        // oneditprepare: function () { onEditPrepare.call(this) },
 
         /** Available methods:
          * oneditprepare: (function) called when the edit dialog is being built.
