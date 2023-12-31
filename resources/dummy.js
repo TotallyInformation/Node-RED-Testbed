@@ -13,9 +13,14 @@
     // Standard width for typed input fields
     // const tiWidth = tiTestbed.typedInputWidth
 
-    // Note that a cancelled or undone paste will trigger and add followed by a delete
+    //#region --- custom events for this node type
+    // Note that a cancelled or undone paste will trigger an add followed by a delete
     RED.events.on('ti-testbed:ti-dummy-node-added', (node) => {
         console.log('[dummy] ti-testbed:ti-dummy-node-added was fired', node, this)
+        tiTestbed.watchNodeBox(node.id, 'click', function(event, target) {
+            console.log(`watchNodeBox:${event.type}:${node.id}`, { event, target })
+            tiTestbed.changeNodeBox(node.id, {})
+        })
     })
     RED.events.on('ti-testbed:ti-dummy-node-changed', (node) => {
         console.log('[dummy] ti-testbed:ti-dummy-node-changed was fired', node)
@@ -23,6 +28,7 @@
     RED.events.on('ti-testbed:ti-common-node-deleted', (node) => {
         console.log('[dummy] ti-testbed:ti-dummy-node-deleted was fired', node)
     })
+    //#endregion ---
 
     /** Validate the topic input - this is called on Editor load, panel open, as well as on change
      * @param {*} value The input value to be validated
@@ -140,16 +146,20 @@
         inputLabels: 'Some Input',
         outputs: 1,
         outputLabels: ['Output 1'],
-        icon: 'font-awesome/fa-code',
+        icon: 'font-awesome/fa-microchip',
         label: function () {
             return this.name || moduleName
         },
+        paletteLabel: moduleName,
         category: tiTestbed.paletteCategory,
         color: 'var(--ti-testbed-node-colour)',
-        paletteLabel: moduleName,
 
         /** Prepares the Editor panel */
         oneditprepare: function () { onEditPrepare(this) },
+        /** Alternatively, bind `this` so you don't need to pass as an arg.
+         *  Then use `this` instead of `node` in the onEditPrepare function.
+         */
+        // oneditprepare: function () { onEditPrepare.call(this) },
 
         /** Available methods:
          * oneditprepare: (function) called when the edit dialog is being built.
