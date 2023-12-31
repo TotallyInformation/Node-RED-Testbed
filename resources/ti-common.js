@@ -46,13 +46,41 @@
                     },
                 })
             },
+            changeNodeBox: function changeNodeBox(nodeid, options) {
+                const target = $(`#${nodeid}`)
+                if (target) {
+                    // target.find('rect.red-ui-flow-node').attr('height', '200')
+                    // d3.select(`#${nodeid}> rect.red-ui-flow-node`).attr('height', '200')
+                    console.log('changeNodeBox', { target, nodeid, options })
+                } else {
+                    console.log('changeNodeBox - Target not found', { nodeid, options })
+                }
+                // g#e4a48f0df31c0e90.red-ui-flow-node > rect
+            },
+            /** Add an event watcher to a node
+             * NB: Has to define watch on higher element since actual node may not yet be defined at setup time.
+             * @param {string} nodeid The node id of the watched node
+             * @param {string} evTypes One or more event types to watch (space separated, add modifier tags if desired - e.g. click.myclick) @link https://api.jquery.com/on/#Event-names-and-namespaces
+             * @param {function(*, *)} cb A callback function to execute. Receives the event and the target svg `g` element as its arguments.
+             */
+            watchNodeBox: function watchNodeBox(nodeid, evTypes, cb) {
+                if (!nodeid || !evTypes || !cb) return
+
+                $(`#${'red-ui-workspace-chart'} > svg .red-ui-workspace-chart-event-layer`)
+                    .on(evTypes, function(event) {
+                        const target = event.target.closest(`#${nodeid}`)
+                        if (target) { // the node was found
+                            cb(event, target)
+                        }
+                    })
+            },
         } // --- end of global tiTestbed object ---
 
         // Turn on debug by default if running on localhost
         tiTestbed.debug = tiTestbed.localHost
-        tiTestbed.log('[tiTestbed] DEBUG ON (because running on localhost)')
+        tiTestbed.log('[tiTestbed] DEBUG ON (because running on localhost)', {window})
 
-        //#region Track Editor changes
+        //#region Track Editor changes - adds node.AddType ('load', 'new' or 'paste/import')
         // WARNING: nodes:add fires at paste - but escape will cancel and not actually add the node
         RED.events.on('nodes:add', function(node) {
             if ( node.type === 'ti-dummy') {
