@@ -257,6 +257,13 @@
  * @property {string} tyiNodeSourceType = config.tyiExprSourceType ?? ''
  */
 
+/** NrNodeInstance
+ * @typedef {object} NrNodeInstance Master class to define custom nodes
+ *
+ * @property {string} name Descriptive name, only used by Editor
+ * @property {string} topic msg.topic overrides incoming msg.topic
+ */
+
 /** Props define attributes on a virtual node.
  * @typedef {Object<string, any> | {}} Props
  * @property {object} Props .
