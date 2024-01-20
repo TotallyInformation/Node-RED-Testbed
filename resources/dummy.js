@@ -82,7 +82,7 @@
      * @param {*} node A node instance as seen from the Node-RED Editor
      */
     function onEditPrepare(node) {
-        // log.log('onEditPrepare', node)
+        // console.log('onEditPrepare', node)
 
         // REF: https://nodered.org/docs/api/ui/typedInput/, 
         $('#node-input-tyiMsg')
@@ -112,7 +112,6 @@
                 default: 'jsonata',
                 typeField: $('#node-input-tyiExprSourceType'),
             }).typedInput('width', tiTestbed.typedInputWidth)
-
 
         $('#node-input-tyiNode')
             .typedInput({
@@ -162,6 +161,7 @@
         // oneditprepare: function () { onEditPrepare.call(this) },
 
         /** Available methods:
+         * onadd: (function) Called when added to a flow (drag from palette, copy/paste, import) - WARN: If paste/import cancelled this has still fired.
          * oneditprepare: (function) called when the edit dialog is being built.
          * oneditsave:   (function) called when the edit Done button pressed - before save happens.
          * oneditcancel: (function) called when the edit Cancel button pressed - before cancel happens.

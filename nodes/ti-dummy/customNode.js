@@ -59,7 +59,7 @@ function whatIsRED(RED) {
 
 /**
  * Examine the node instance object's top-2 levels of properties
- * @param {runtimeNode & tiDummyNode} node The RED global object
+ * @param {runtimeNode & tiDummyNode} node The node object
  */
 function whatIsThis(node) {
     console.groupCollapsed('KEYs of NODE')
@@ -69,43 +69,21 @@ function whatIsThis(node) {
     console.groupEnd()
 }
 
-/** 3) Run whenever a node instance receives a new input msg
- * NOTE: `this` context is still the parent (nodeInstance).
- * See https://nodered.org/blog/2019/09/20/node-done
- * @param {object} msg The msg object received.
- * @param {Function} send Per msg send function, node-red v1+
- * @param {Function} done Per msg finish function, node-red v1+
- * @this {runtimeNode & tiDummyNode}
+/** 1) Complete module definition for our Node. This is where things actually start.
+ * @param {runtimeRED} RED The Node-RED runtime object
  */
-async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
+function ModuleDefinition(RED) {
+    // As a module-level named function, it will inherit `mod` and other module-level variables
 
-    const RED = mod.RED
+    // Save a reference to the RED runtime for convenience
+    mod.RED = RED
 
-    // Get all of the typed input values (in parallel)
-    // Any dynamic type might have changed between deployment and msg receipt
-    await Promise.all([
-        getSource('tyiMsg', this, msg, RED),
-        getSource('tyiGlobal', this, msg, RED),
-        getSource('tyiEnv', this, msg, RED),
-        getSource('tyiExpr', this, msg, RED), // contains core data
-        getSource('tyiNode', this, msg, RED), // contains core data
-    ])
+    // Save a ref to a promisified version to simplify async callback handling
+    // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
 
-    msg.tyiMsg = this.tyiMsg
-    msg.tyiGlobal = this.tyiGlobal
-    msg.tyiEnv = this.tyiEnv
-    msg.tyiExpr = this.tyiExpr
-    msg.tyiNode = this.tyiNode
-
-    const that = this
-    console.log({ that })
-
-    // Pass straight through
-    send(msg)
-
-    // We are done - Needed because we are async
-    done()
-} // ----- end of inputMsgHandler ----- //
+    /** Register a new instance of the specified node type (2) */
+    RED.nodes.registerType(mod.nodeName, nodeInstance)
+}
 
 /** 2) This is run when an actual instance of our node is committed to a flow
  * type {function(this:runtimeNode&senderNode, runtimeNodeConfig & senderNode):void}
@@ -153,21 +131,43 @@ function nodeInstance(config) {
 
 //#endregion ----- Module-level support functions ----- //
 
-/** 1) Complete module definition for our Node. This is where things actually start.
- * @param {runtimeRED} RED The Node-RED runtime object
+/** 3) Run whenever a node instance receives a new input msg
+ * NOTE: `this` context is still the parent (nodeInstance).
+ * See https://nodered.org/blog/2019/09/20/node-done
+ * @param {object} msg The msg object received.
+ * @param {Function} send Per msg send function, node-red v1+
+ * @param {Function} done Per msg finish function, node-red v1+
+ * @this {runtimeNode & tiDummyNode}
  */
-function ModuleDefinition(RED) {
-    // As a module-level named function, it will inherit `mod` and other module-level variables
+async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
 
-    // Save a reference to the RED runtime for convenience
-    mod.RED = RED
+    const RED = mod.RED
 
-    // Save a ref to a promisified version to simplify async callback handling
-    // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
+    // Get all of the typed input values (in parallel)
+    // Any dynamic type might have changed between deployment and msg receipt
+    await Promise.all([
+        getSource('tyiMsg', this, msg, RED),
+        getSource('tyiGlobal', this, msg, RED),
+        getSource('tyiEnv', this, msg, RED),
+        getSource('tyiExpr', this, msg, RED), // contains core data
+        getSource('tyiNode', this, msg, RED), // contains core data
+    ])
 
-    /** Register a new instance of the specified node type (2) */
-    RED.nodes.registerType(mod.nodeName, nodeInstance)
-}
+    msg.tyiMsg = this.tyiMsg
+    msg.tyiGlobal = this.tyiGlobal
+    msg.tyiEnv = this.tyiEnv
+    msg.tyiExpr = this.tyiExpr
+    msg.tyiNode = this.tyiNode
+
+    const that = this
+    console.log({ that })
+
+    // Pass straight through
+    send(msg)
+
+    // We are done - Needed because we are async
+    done()
+} // ----- end of inputMsgHandler ----- //
 
 // Export the module definition (1), this is consumed by Node-RED on startup.
 module.exports = ModuleDefinition
