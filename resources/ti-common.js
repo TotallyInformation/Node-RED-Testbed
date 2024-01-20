@@ -68,9 +68,13 @@
 
                 $(`#${'red-ui-workspace-chart'} > svg .red-ui-workspace-chart-event-layer`)
                     .on(evTypes, function(event) {
-                        const target = event.target.closest(`#${nodeid}`)
-                        if (target) { // the node was found
-                            cb(event, target)
+                        try { // May fail if target is an SVG element
+                            const target = event.target.closest(`#${nodeid}`)
+                            if (target) { // the node was found
+                                cb(event, target)
+                            }
+                        } catch (e) {
+                            console.warn('event.target not present, an SVG element maybe?', event)
                         }
                     })
             },
