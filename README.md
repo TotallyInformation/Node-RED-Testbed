@@ -37,3 +37,34 @@ Please note that this is serious overkill for simple custom nodes, it embodies m
 * There is also a `typedefs.js` file where you will find definitions for your nodes and some enhanced definitions for Node-RED components as well. These work along with the JSDoc definitions, particularly in the runtime code.
 
 * A full set of eslint dev dependencies are present along with the minimal grunt dev dependencies you may want for automation. Running `npm install` will get you up and running with a decent environment and this all works well with VScode.
+
+## Nodes
+
+### `ti-template`
+
+This is a blank template for building new nodes.
+
+### `ti-dummy`
+
+This is the main testbed node.
+
+## Folders
+
+* root
+* `docs`
+* `examples`
+* `locales`
+* `nodes` - Each node has its own sub-folder. There is an additional sub-folder, `libs`, that will contain any shared runtime libraries.
+* `resources` - Each node's Editor JavaScript code is provided in a file with the same name as the node. There is also a common JS library and CSS file.
+* `src` - Each node's Editor html source files are here. The default `gulp` process watches for changes and rebuild's the node's actual html. A separate `components` sub-folder exists to contain any web components.
+
+## To Do
+
+These are some experiments I'd like to try when time permits.
+
+### Class-based runtime
+
+Based on [this discussion in the forum](https://discourse.nodered.org/t/noisecraft-anyone-heard-of-it/79813/103?u=totallyinformation), 
+it would be very interesting to try to refactor the runtime code into a parent class that could then be extended for each node.
+
+This might greatly reduce the boilerplate that a custom node requires.
