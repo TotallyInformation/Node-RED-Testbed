@@ -82,38 +82,38 @@ if (!process.cwd().startsWith('D:')) {
 /** Combine the parts of ti-template.html
  * @param {Function} cb callback
  */
-function buildTiTemplate(cb) {
-    try {
-        src('src/ti-template/main.html')
-            .pipe(include())
-            .pipe(once())
-            .pipe(rename('customNode.html'))
-            .pipe(htmlmin({ collapseWhitespace: true, removeComments: true, minifyJS: true }))
-            .pipe(dest('nodes/ti-template'))
-    } catch (e) {
-        console.error('buildTiTemplate failed', e)
-    }
+// function buildTiTemplate(cb) {
+//     try {
+//         src('src/ti-template/main.html')
+//             .pipe(include())
+//             .pipe(once())
+//             .pipe(rename('customNode.html'))
+//             .pipe(htmlmin({ collapseWhitespace: true, removeComments: true, minifyJS: true }))
+//             .pipe(dest('nodes/ti-template'))
+//     } catch (e) {
+//         console.error('buildTiTemplate failed', e)
+//     }
 
-    cb()
-}
+//     cb()
+// }
 
 /** Combine the parts of ti-dummy.html
  * @param {Function} cb callback
  */
-function buildTiDummy(cb) {
-    try {
-        src('src/ti-dummy/main.html')
-            .pipe(include())
-            .pipe(once())
-            .pipe(rename('customNode.html'))
-            .pipe(htmlmin({ collapseWhitespace: true, removeComments: true, minifyJS: true }))
-            .pipe(dest('nodes/ti-dummy'))
-    } catch (e) {
-        console.error('buildTiDummy failed', e)
-    }
+// function buildTiDummy(cb) {
+//     try {
+//         src('src/ti-dummy/main.html')
+//             .pipe(include())
+//             .pipe(once())
+//             .pipe(rename('customNode.html'))
+//             .pipe(htmlmin({ collapseWhitespace: true, removeComments: true, minifyJS: true }))
+//             .pipe(dest('nodes/ti-dummy'))
+//     } catch (e) {
+//         console.error('buildTiDummy failed', e)
+//     }
 
-    cb()
-}
+//     cb()
+// }
 
 //#endregion ---- ---- ----
 
@@ -123,11 +123,11 @@ function buildTiDummy(cb) {
  */
 function watchme(cb) {
     // Re-pack uibuilderfe if it changes
-    watch('src/ti-template/*', buildTiTemplate)
-    watch('src/ti-dummy/*', buildTiDummy)
+    // watch('src/ti-template/*', buildTiTemplate)
+    // watch('src/ti-dummy/*', buildTiDummy)
 
     cb()
 }
 
-exports.default       = watchme
-exports.watch       = watchme
+exports.default = watchme
+exports.watch   = watchme
