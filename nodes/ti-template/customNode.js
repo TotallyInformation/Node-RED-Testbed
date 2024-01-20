@@ -44,24 +44,21 @@ const mod = {
 
 //#region ----- Module-level support functions ----- //
 
-/** 3) Run whenever a node instance receives a new input msg
- * NOTE: `this` context is still the parent (nodeInstance).
- * See https://nodered.org/blog/2019/09/20/node-done
- * @param {object} msg The msg object received.
- * @param {Function} send Per msg send function, node-red v1+
- * @param {Function} done Per msg finish function, node-red v1+
- * @this {runtimeNode & tiTemplateNode}
+/** 1) Complete module definition for our Node. This is where things actually start.
+ * @param {runtimeRED} RED The Node-RED runtime object
  */
-async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
+function ModuleDefinition(RED) {
+    // As a module-level named function, it will inherit `mod` and other module-level variables
 
-    // const RED = mod.RED
+    // Save a reference to the RED runtime for convenience
+    mod.RED = RED
 
-    // Pass straight through
-    send(msg)
+    // Save a ref to a promisified version to simplify async callback handling
+    // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
 
-    // We are done - not really needed probably
-    done()
-} // ----- end of inputMsgHandler ----- //
+    /** Register a new instance of the specified node type (2) */
+    RED.nodes.registerType(mod.nodeName, nodeInstance)
+}
 
 /** 2) This is run when an actual instance of our node is committed to a flow
  * type {function(this:runtimeNode&senderNode, runtimeNodeConfig & senderNode):void}
@@ -86,23 +83,26 @@ function nodeInstance(config) {
     this.on('input', inputMsgHandler)
 } // ---- End of nodeInstance ---- //
 
-//#endregion ----- Module-level support functions ----- //
-
-/** 1) Complete module definition for our Node. This is where things actually start.
- * @param {runtimeRED} RED The Node-RED runtime object
+/** 3) Run whenever a node instance receives a new input msg
+ * NOTE: `this` context is still the parent (nodeInstance).
+ * See https://nodered.org/blog/2019/09/20/node-done
+ * @param {object} msg The msg object received.
+ * @param {Function} send Per msg send function, node-red v1+
+ * @param {Function} done Per msg finish function, node-red v1+
+ * @this {runtimeNode & tiTemplateNode}
  */
-function ModuleDefinition(RED) {
-    // As a module-level named function, it will inherit `mod` and other module-level variables
+async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
 
-    // Save a reference to the RED runtime for convenience
-    mod.RED = RED
+    // const RED = mod.RED
 
-    // Save a ref to a promisified version to simplify async callback handling
-    // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
+    // Pass straight through
+    send(msg)
 
-    /** Register a new instance of the specified node type (2) */
-    RED.nodes.registerType(mod.nodeName, nodeInstance)
-}
+    // We are done - not really needed probably
+    done()
+} // ----- end of inputMsgHandler ----- //
+
+//#endregion ----- Module-level support functions ----- //
 
 // Export the module definition (1), this is consumed by Node-RED on startup.
 module.exports = ModuleDefinition
