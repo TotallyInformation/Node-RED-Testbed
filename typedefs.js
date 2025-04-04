@@ -101,6 +101,14 @@
  * @property {Function} audit Audit log
  * @property {Function} addHandler Adds a log handler
  * @property {Function} removeHandler Removes a log handler
+ * @property {10} FATAL : 10,
+ * @property {20} ERROR : 20,
+ * @property {30} WARN  : 30,
+ * @property {40} INFO  : 40,
+ * @property {50} DEBUG : 50,
+ * @property {60} TRACE : 60,
+ * @property {98} AUDIT : 98,
+ * @property {99} METRIC: 99,
  */
 
 /** Node-RED runtimeNodes: RED.nodes
@@ -120,21 +128,29 @@
  * @typedef {object} runtimeRED The core Node-RED runtime object
  * @property {expressApp} httpAdmin Reference to the ExpressJS app for Node-RED Admin including the Editor
  * @property {expressApp} httpNode Reference to the ExpressJS app for Node-RED user-facing nodes including http-in/-out and Dashboard
- * @property {object} server Node.js http(s) Server object
+ * @property {Server} server Node.js http(s) Server object
  * @property {runtimeLogging} log Logging.
  * @property {runtimeNodes} nodes Gives access to other active nodes in the flows.
  * @property {runtimeSettings} settings Static and Dynamic settings for Node-RED runtime
  *
- * @property {Function} version Get the Node-RED version
+ * @property {Function} version Get the Node-RED version [Function: getVersion],
  * @property {Function} require : [Function: requireModule],
- * @property {Function} comms : { publish: [Function: publish] },
- * @property {Function} library : { register: [Function: register] },
- * @property {Function} auth : { needsPermission: [Function: needsPermission] },
+ * @property {Function} import : [Function: importModule],
  *
- * @property {object} events Event handler object
+ * @property {object} auth :
+ * @property {Function} auth.needsPermission : [Function: needsPermission]
+ *
+ * @property {object} library :
+ * @property {Function} library.register : [Function: register],
+ *
+ * @property {object} comms Communicate with admin pages
+ * @property {Function} comms.publish : [Function: publish],
+ *
+ * @property {EventEmitter} events Event handler object
  * @property {Function} events.on Event Listener Function. Types: 'nodes-started', 'nodes-stopped'
  * @property {Function} events.once .
  * @property {Function} events.addListener .
+ * @property {((name:string, opts:object)=>void)} events.emit Emit a new event
  *
  * @property {object} hooks .
  * @property {Function} hooks.has .
@@ -144,26 +160,32 @@
  * @property {Function} hooks.trigger .
  *
  * @property {object} util .
- * @property {Function} util.encodeobject : [Function: encodeobject],
- * @property {Function} util.ensurestring : [Function: ensurestring],
+ * @property {Function} util.encodeObject : [Function: encodeobject],
+ * @property {Function} util.ensureString : [Function: ensurestring],
  * @property {Function} util.ensureBuffer : [Function: ensureBuffer],
  * @property {Function} util.cloneMessage : [Function: cloneMessage],
- * @property {Function} util.compareobjects : [Function: compareobjects],
+ * @property {Function} util.compareObjects : [Function: compareobjects],
  * @property {Function} util.generateId : [Function: generateId],
  * @property {Function} util.getMessageProperty : [Function: getMessageProperty],
  * @property {Function} util.setMessageProperty : [Function: setMessageProperty],
- * @property {Function} util.getobjectProperty : [Function: getobjectProperty],
- * @property {Function} util.setobjectProperty : [Function: setobjectProperty],
+ * @property {Function} util.getObjectProperty : [Function: getobjectProperty],
+ * @property {Function} util.setObjectProperty : [Function: setobjectProperty],
  * @property {Function} util.evaluateNodeProperty : [Function: evaluateNodeProperty],
  * @property {Function} util.normalisePropertyExpression : [Function: normalisePropertyExpression],
  * @property {Function} util.normaliseNodeTypeName : [Function: normaliseNodeTypeName],
  * @property {Function} util.prepareJSONataExpression : [Function: prepareJSONataExpression],
  * @property {Function} util.evaluateJSONataExpression : [Function: evaluateJSONataExpression],
  * @property {Function} util.parseContextStore : [Function: parseContextStore]
- * 
+ * @property {Function} util.getSetting ??
+ *
  * @property {object} util.uib : Added by uibuilder.js - utility functions made available to function nodes
- * @property {Function} util.uib.deepObjFind : Recursive object deep find
+ * @property {Function} util.uib.deepObjFind : Recursive object deep find - https://totallyinformation.github.io/node-red-contrib-uibuilder/#/client-docs/config-driven-ui?id=manipulating-msg_ui
  * @property {Function} util.uib.listAllApps : Return a list of all uibuilder instances
+ *
+ * @property {object} plugins Node-RED plugins
+ * @property {Function} plugins.registerPlugin : [Function: registerPlugin],
+ * @property {Function} plugins.get: [Function: get],
+ * @property {Function} plugins.getByType: [Function: getByType]
  */
 
 /** runtimeNode
@@ -180,11 +202,20 @@
  * @property {Function} debug Debug level log output
  * @property {Function} status Show a status message under the node in the Editor
  * @property {object=} credentials Optional secured credentials
- * @property {object=} name Internal.
- * @property {object=} id Internal. uid of node instance.
- * @property {object=} type Internal. Type of node instance.
- * @property {object=} z Internal. uid of ???
+ * @property {string=} name Internal.
+ * @property {string=} id Internal. uid of node instance.
+ * @property {string=} type Internal. Type of node instance.
+ * @property {string=} z Internal. uid of ???
+ * @property {string=} g Internal. uid of ???
  * @property {[Array<string>]=} wires Internal. Array of Array of strings. The wires attached to this node instance (uid's)
+ * @property {number=} _wireCount Count of connected wires
+ * @property {string=} _wire ID of connected wire
+ * @property {[Array<Function>]=} _closeCallbacks ??
+ * @property {[Array<Function>]=} _inputCallback Input callback fn
+ * @property {[Array<Function>]=} _inputCallbacks ??
+ * @property {number=} _expectedDoneCount ??
+ * @property {Flow=} _flow Full definition of this node's containing flow
+ * @property {*=} _alias ??
  */
 
 /** runtimeNodeConfig

@@ -8,7 +8,7 @@
     // const log = tiTestbed.log
 
     /** Module name must match this nodes html file @constant {string} moduleName */
-    const moduleName = 'ti-dummy'
+    const moduleName = 'ti-class'
 
     // Standard width for typed input fields
     // const tiWidth = tiTestbed.typedInputWidth
@@ -27,17 +27,6 @@
     })
     RED.events.on('ti-testbed:ti-common-node-deleted', (node) => {
         console.log('[dummy] ti-testbed:ti-dummy-node-deleted was fired', node)
-    })
-
-    // Don't seem to work - see dummy customNode.js
-    RED.events.on('ti-testbed:ti-common-run', (data) => {
-        console.log('on ti-testbed:ti-common-run', data)
-    })
-    RED.comms.on('ti-testbed:test', (data) => {
-        console.log('on ti-testbed:test', data)
-    })
-    RED.events.on('ti-testbed:test2', (data) => {
-        console.log('on ti-testbed:test2', data)
     })
     //#endregion ---
 
@@ -93,7 +82,7 @@
      * @param {*} node A node instance as seen from the Node-RED Editor
      */
     function onEditPrepare(node) {
-        // console.log('onEditPrepare', node)
+        // log.log('onEditPrepare', node)
 
         // REF: https://nodered.org/docs/api/ui/typedInput/, 
         $('#node-input-tyiMsg')
@@ -123,6 +112,7 @@
                 default: 'jsonata',
                 typeField: $('#node-input-tyiExprSourceType'),
             }).typedInput('width', tiTestbed.typedInputWidth)
+
 
         $('#node-input-tyiNode')
             .typedInput({
@@ -172,7 +162,6 @@
         // oneditprepare: function () { onEditPrepare.call(this) },
 
         /** Available methods:
-         * onadd: (function) Called when added to a flow (drag from palette, copy/paste, import) - WARN: If paste/import cancelled this is still fired.
          * oneditprepare: (function) called when the edit dialog is being built.
          * oneditsave:   (function) called when the edit Done button pressed - before save happens.
          * oneditcancel: (function) called when the edit Cancel button pressed - before cancel happens.

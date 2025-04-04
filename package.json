@@ -1,6 +1,6 @@
 {
   "name": "@totallyinformation/node-red-testbed",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A blank canvas to test out ideas for Node-RED custom nodes",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,13 +11,13 @@
     "eslint": "^8.31.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-es": "^4.1.0",
-    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-html": "^8.1.1",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^46.4.2",
-    "eslint-plugin-n": "^16.0.1",
+    "eslint-plugin-jsdoc": "^48.5.0",
+    "eslint-plugin-n": "^17.9.0",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-sonarjs": "^0",
-    "gulp": "^4.0.2",
+    "eslint-plugin-sonarjs": "^1.0.3",
+    "gulp": "^5.0.0",
     "gulp-htmlmin": "^5.0.1",
     "gulp-include": "^2.4.1",
     "gulp-once": "^2.1.1",
@@ -38,7 +38,12 @@
   "node-red": {
     "version": ">=3",
     "nodes": {
-      "ti-dummy": "nodes/ti-dummy/customNode.js"
+      "ti-dummy": "nodes/ti-dummy/customNode.js",
+      "ti-class": "nodes/ti-class/customNode.js"
+    },
+    "plugins": {
+      "ti-dummy-edit-plugin": "nodes/ti-testbed-common-editor-plugin.html",
+      "ti-dummy-runtime-plugin": "nodes/ti-testbed-runtime-plugin.js"
     }
   },
   "engines": {
@@ -74,5 +79,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/TotallyInformation/node-red-contrib-testbed"
+  },
+  "dependencies": {
+    "@totallyinformation/ti-common-event-handler": "^1.0.1"
   }
 }

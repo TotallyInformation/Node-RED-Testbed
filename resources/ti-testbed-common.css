@@ -27,14 +27,23 @@
         sans-serif;
 }
 
-#ti-edit-panel fieldset {
+#ti-testbed-edit-panel fieldset {
     border-style: groove;
     border-color: var(--red-ui-primary-background);
     border-width: 2px;
     padding-left: .3em;
 }
-#ti-edit-panel legend {
+#ti-testbed-edit-panel legend {
     width:fit-content;
     padding-left: .2em;
     padding-right: .2em;
+}
+
+.red-ui-flow-node-available-indicator {
+    fill: hsl(59 10% 80%);
+    /* stroke: var(--red-ui-node-status-changed-border); */
+    cursor: default;
+    /* stroke-width: 1px;
+    stroke-linejoin: round;
+    stroke-linecap: round; */
 }

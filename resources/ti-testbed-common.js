@@ -2,7 +2,15 @@
  * Load as: ./resources/@totallyinformation/node-red-testbed/ti-common.js
  */
 
-;(function () { // eslint-disable-line sonarjs/cognitive-complexity
+/** TODO
+ * Now this is loaded as a plugin, should really use
+ *   RED.plugins.registerPlugin('ti-dummy-edit-plugin', { onadd: function() { ... } } )
+ * to register and run.
+ * https://github.com/node-red/nrlint/blob/bb60347c4a11e5e0bbc77ea20e75535677c5bddd/src/nrlint-core.html#L344
+ * Also note that RED is available here
+ */
+
+;(function (RED) { // eslint-disable-line sonarjs/cognitive-complexity
     'use strict'
     // Make sure we only run this once
     if (!window['tiTestbed']) {
@@ -127,7 +135,14 @@
         // })
         //#endregion
 
+        // Don't seem to work - see dummy customNode.js
         RED.events.emit('ti-testbed:ti-common-run', {'some': 'data'})
+        RED.comms.on('ti-testbed:test', (data) => {
+            console.log('on ti-testbed:test', data)
+        })
+        RED.events.on('ti-testbed:test2', (data) => {
+            console.log('on ti-testbed:test2', data)
+        })
 
         /** If debug, dump out key information to console */
         if (tiTestbed.debug === true) {
@@ -138,5 +153,35 @@
                 console.groupEnd()
             }, 1500)
         }
+
+        // https://discourse.nodered.org/t/special-indication-on-nodes-with-description/78646/76
+        // RED.view.node_width and RED.view.node_height
+        // RED.events.on( 'editor:close', function(data) {
+        //     let x = 0
+        //     let y = 0
+        //     RED.nodes.eachNode( n => {
+        //         y++
+        //         $(`#${n.id}`).find('.red-ui-info-available-indicator').remove()
+        //         if ( n.info ) {
+        //             x++
+        //             // $(`#${n.id}`).append('<g class="red-ui-flow-node-available-indicator" transform="translate(5,5)"><circle cx="5" cy="5" r="5"></circle></g>')
+        //             // // NB: You have to re-render the container (ref: https://stackoverflow.com/a/36305466/1309986):
+        //             // $(`#${n.id}`).html($(`#${n.id}`).html())
+        //         }
+        //     })
+        //     console.log(x, y)
+        // })
     }
-}())
+
+    RED.plugins.registerPlugin('ti-testbed-common-edit-plugin', {
+        // type: 'ti-testbed-common-edit-plugin', // optional
+        onadd: function() {
+            console.log('[ti-dummy-edit-plugin] ti-testbed-common.js loaded, onadd called')
+
+            if (window['uibuilder']) console.log('>> ti-testbed-common found uibuilder >> ', window['uibuilder'])
+        },
+        // onremove: function() {},
+    } )
+
+// @ts-ignore
+}(RED))

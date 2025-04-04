@@ -62,6 +62,10 @@ This is the main testbed node.
 
 These are some experiments I'd like to try when time permits.
 
+### Plugin tests
+
+* Can plugin's access uibuilder globals?
+
 ### Class-based runtime
 
 Based on [this discussion in the forum](https://discourse.nodered.org/t/noisecraft-anyone-heard-of-it/79813/103?u=totallyinformation), 

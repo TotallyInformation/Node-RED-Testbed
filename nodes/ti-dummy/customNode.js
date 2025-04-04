@@ -33,8 +33,8 @@ const { getSource } = require('../libs/uiblib')
  *  that can easily be passed around.
  */
 const mod = {
-    /** @type {runtimeRED|undefined} Reference to the master RED instance */
-    RED: undefined,
+    /** @type {runtimeRED} Reference to the master RED instance */
+    // RED: undefined,
     /** @type {Function|undefined} Reference to a promisified version of RED.util.evaluateNodeProperty*/
     // evaluateNodeProperty: undefined,
     /** @type {string} Custom Node Name - has to match with html file and package.json `red` section */
@@ -51,9 +51,12 @@ const mod = {
  */
 function whatIsRED(RED) {
     console.groupCollapsed('KEYs of RED')
-    Object.keys(RED).forEach( key => {
-        console.log(`${key}: `, Object.keys(RED[key]))
-    })
+    const util = require('util')
+    console.log(util.inspect(RED, { showHidden: false, depth: 1, colors: true }))
+
+    // Object.keys(RED).forEach( key => {
+    //     console.log(`${key}: `, Object.keys(RED[key]))
+    // })
     console.groupEnd()
 }
 
@@ -61,11 +64,15 @@ function whatIsRED(RED) {
  * Examine the node instance object's top-2 levels of properties
  * @param {runtimeNode & tiDummyNode} node The node object
  */
-function whatIsThis(node) {
+// @ts-ignore
+function whatIsThis(node) { // eslint-disable-line no-unused-vars
     console.groupCollapsed('KEYs of NODE')
-    Object.keys(node).forEach( key => {
-        console.log(`${key}: `, Object.keys(node[key]))
-    })
+    const util = require('util')
+    console.log(util.inspect(node, { showHidden: false, depth: 0, colors: true }))
+
+    // Object.keys(node).forEach( key => {
+    //     console.log(`${key}: `, Object.keys(node[key]))
+    // })
     console.groupEnd()
 }
 
@@ -93,7 +100,9 @@ function ModuleDefinition(RED) {
 function nodeInstance(config) {
     // As a module-level named function, it will inherit `mod` and other module-level variables
 
-    // If you need it - which you will here - or just use mod.RED if you prefer:
+    /** If you need it - which you will here - or just use mod.RED if you prefer:
+     * @type {runtimeRED}
+     */
     const RED = mod.RED
     if (RED === null) return
 
@@ -116,6 +125,8 @@ function nodeInstance(config) {
     this.tyiNodeSource = config.tyiNode ?? ''
     this.tyiNodeSourceType = config.tyiNodeSourceType ?? ''
 
+    // console.log(this)
+
     // Any dynamic type might have changed between deployment and msg receipt
     // So we don't get them here. Though static ones could be (string, number, json, bool)
 
@@ -125,8 +136,50 @@ function nodeInstance(config) {
     // Include this if you want to examine the node instance object's keys
     // whatIsThis(this)
 
+    // console.log('uiPort', RED.settings.uiPort, RED.settings.uiHost)
+    // console.log('admin express', Object.keys(RED.httpAdmin))
+
     /** Handle incoming msg's - note that the handler fn inherits `this` */
     this.on('input', inputMsgHandler)
+
+    // console.log('>> RED.events >>', RED.events)
+    // console.log('>> RED.comms.publish >>', RED.comms.publish.toString())
+    setTimeout(() => {
+        // whatIsRED(RED)
+
+        console.log('>> ti-dummy >> sending >>')
+        // These don't seem to work
+        RED.comms.publish('ti-testbed:test', { data: 'hello' })
+        RED.events.emit('ti-testbed:test2', { data: 'hello2' })
+        // This works - Shows a node-red admin notification popup
+        RED.events.emit('runtime-event', {
+            id: 'test123',
+            payload: {
+                text: '[ti-testbed:dummy:runtimeevent] Some error happened on server side',
+                type: 'error',
+                timeout: 6000
+            }
+        })
+        // This works, outputs to debug panel
+        // console.log('this._flow', this._flow)
+        // console.log('this._alias', this._alias)
+        const msg2 = RED.util.encodeObject(
+            {
+                id: this.id,
+                z: this.z,
+                _alias: this._alias,
+                path: this._flow.path,
+                name: this.name,
+                topic: 'ti-testbed:dummy:testevent',
+                msg: { payload: 'hello - message from the dummy nodes runtime' },
+            },
+            { maxLength: 1000 }
+        )
+        RED.comms.publish('debug', msg2)
+
+        // Experiment: Post a message to uibuilder url sender-test
+        RED.events.emit('UIBUILDER/sender-test', {data: 'Hello from ti-dummy testbed!'} )
+    }, 3000)
 } // ---- End of nodeInstance ---- //
 
 //#endregion ----- Module-level support functions ----- //
