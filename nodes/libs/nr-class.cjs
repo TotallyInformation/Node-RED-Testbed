@@ -1,7 +1,8 @@
+/* eslint-disable jsdoc/valid-types */
 /** A parent class for node runtime code.
  * An experiment to try and reduce boilerplate for custom nodes.
  *
- * Copyright (c) 2024 Julian Knight (Totally Information)
+ * Copyright (c) 2024-2025 Julian Knight (Totally Information)
  * https://it.knightnet.org.uk, https://github.com/TotallyInformation/node-red-contrib-uibuilder
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
@@ -26,12 +27,12 @@
  */
 
 class NrNode {
-    //#region ---- Class Variables ----
+    // #region ---- Class Variables ----
     /** Reference to the master RED instance */
     RED
     /** Custom Node Name - has to match with html file and package.json `red` section */
     nodeName = 'dummy-do-not-use'
-    //#endregion ---- ---- ----
+    // #endregion ---- ---- ----
 
     constructor() {
         console.log('>> NrNode:constructor >>', this.nodeName)
