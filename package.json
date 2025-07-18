@@ -43,11 +43,11 @@
     "nodes": {
       "threw-out": "nodes/threw-out/customNode.js",
       "ti-dummy": "nodes/ti-dummy/customNode.js",
-      "ti-class": "nodes/ti-class/customNode.cjs"
+      "ti-class": "nodes/ti-class/customNode.js"
     },
     "plugins": {
       "ti-dummy-edit-plugin": "nodes/ti-testbed-common-editor-plugin.html",
-      "ti-dummy-runtime-plugin": "nodes/ti-testbed-runtime-plugin.cjs"
+      "ti-dummy-runtime-plugin": "nodes/ti-testbed-runtime-plugin.js"
     }
   },
   "engines": {
