@@ -37,7 +37,7 @@
  * @property {object} FunctionGlobalContext Add values, Functions, packages to the Global context variable store.
  * @property {Function} mqttReconnectTime : [Getter/Setter],
  * @property {Function} serialReconnectTime : [Getter/Setter],
- * @property {Function} debugMaxLength : [Getter/Setter],
+ * @property {number} debugMaxLength : [Getter/Setter],
  * @property {Function} debugUseColors : [Getter/Setter],
  * @property {string} flowFile : [Getter/Setter],
  * @property {Function} flowFilePretty : [Getter/Setter],
@@ -275,6 +275,15 @@
  *
  * @property {string} name Descriptive name, only used by Editor
  * @property {string} topic msg.topic overrides incoming msg.topic
+ */
+
+/** tiThrewOutNode
+ * @typedef {object} tiThrewOutNode An example template for custom nodes
+ *
+ * @property {string} name Descriptive name, only used by Editor
+ * @property {string} topic msg.topic overrides incoming msg.topic
+ * @property {boolean} active Is debug output active? If not, passthrough only
+ * @property {boolean} console Is console output active? If not, passthrough only
  */
 
 /** tiDummyNode

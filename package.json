@@ -41,6 +41,7 @@
   "node-red": {
     "version": ">=4",
     "nodes": {
+      "threw-out": "nodes/threw-out/customNode.js",
       "ti-dummy": "nodes/ti-dummy/customNode.js",
       "ti-class": "nodes/ti-class/customNode.cjs"
     },

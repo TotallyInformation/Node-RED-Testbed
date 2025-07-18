@@ -1,0 +1,141 @@
+/* eslint-disable jsdoc/valid-types */
+/** An inline output (debug) node
+ *
+ * Copyright (c) 2025-2025 Julian Knight (Totally Information)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+'use strict'
+
+/** --- Type Defs - should help with coding ---
+ * @typedef {import('../../typedefs').runtimeRED} runtimeRED
+ * @typedef {import('../../typedefs').runtimeNodeConfig} runtimeNodeConfig
+ * @typedef {import('../../typedefs').runtimeNode} runtimeNode
+ * @typedef {import('../../typedefs').tiThrewOutNode} tiThrewOutNode <= Change this to be specific to this node
+ */
+
+// #region ----- Module level variables ---- //
+
+// Uncomment this if you want to use the promisified version of evaluateNodeProperty
+// const { promisify } = require('util')
+
+/** Main (module) variables - acts as a configuration object
+ *  that can easily be passed around.
+ */
+const mod = {
+    /** @type {runtimeRED|undefined} Reference to the master RED instance */
+    RED: undefined,
+    /** @type {Function|undefined} Reference to a promisified version of RED.util.evaluateNodeProperty*/
+    // evaluateNodeProperty: undefined,
+    /** @type {string} Custom Node Name - has to match with html file and package.json `red` section */
+    nodeName: 'threw-out', // <== CHANGE
+    /** @type {number} Max length of debug output */
+    debuglength: 1000, // Max length of debug output
+}
+
+// #endregion ----- Module level variables ---- //
+
+// #region ----- Module-level support functions ----- //
+
+/** Examine the RED object's top-2 levels of properties
+ * @param {runtimeNode & tiThrewOutNode} node The RED global object
+ * @param {object} msg The msg object to output.
+ */
+function sendDebug(node, msg) {
+    // console.log('sendDebug', msg, mod.RED.util.encodeObject(msg, { maxLength: mod.debuglength, }))
+    console.log('sendDebug', msg)
+    const newmsg = mod.RED.util.encodeObject(
+        {
+            id: node.id, z: node.z, _alias: node._alias,
+            path: node._flow.path, name: node.name,
+            topic: msg.topic,
+            msg: msg,
+        },
+        {
+            maxLength: mod.debuglength,
+        }
+    )
+    mod.RED.comms.publish('debug', newmsg)
+}
+
+/** 1) Complete module definition for our Node. This is where things actually start.
+ * @param {runtimeRED} RED The Node-RED runtime object
+ */
+function ModuleDefinition(RED) {
+    // As a module-level named function, it will inherit `mod` and other module-level variables
+
+    // Save a reference to the RED runtime for convenience
+    mod.RED = RED
+
+    mod.debuglength = RED.settings.debugMaxLength || 1000
+
+    // Save a ref to a promisified version to simplify async callback handling
+    // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
+
+    /** Register a new instance of the specified node type (2) */
+    RED.nodes.registerType(mod.nodeName, nodeInstance)
+}
+
+/** 2) This is run when an actual instance of our node is committed to a flow
+ * type {function(this:runtimeNode&senderNode, runtimeNodeConfig & senderNode):void}
+ * @param {runtimeNodeConfig & tiThrewOutNode} config The Node-RED node instance config object
+ * @this {runtimeNode & tiThrewOutNode}
+ */
+function nodeInstance(config) {
+    // As a module-level named function, it will inherit `mod` and other module-level variables
+
+    // If you need it - which you will here - or just use mod.RED if you prefer:
+    const RED = mod.RED
+    if (RED === null) return
+
+    // @ts-ignore Create the node instance - `this` can only be referenced AFTER here
+    RED.nodes.createNode(this, config)
+
+    /** Transfer config items from the Editor panel to the runtime */
+    this.name = config.name ?? ''
+    this.topic = config.topic ?? ''
+    this.active = config.active ?? true
+    this.console = config.console ?? true
+
+    /** Handle incoming msg's - note that the handler fn inherits `this` */
+    this.on('input', inputMsgHandler)
+} // ---- End of nodeInstance ---- //
+
+/** 3) Run whenever a node instance receives a new input msg
+ * NOTE: `this` context is still the parent (nodeInstance).
+ * See https://nodered.org/blog/2019/09/20/node-done
+ * @param {object} msg The msg object received.
+ * @param {Function} send Per msg send function, node-red v1+
+ * @param {Function} done Per msg finish function, node-red v1+
+ * @this {runtimeNode & tiThrewOutNode}
+ */
+async function inputMsgHandler(msg, send, done) {
+    // const RED = mod.RED
+
+    if (this.console) {
+        sendDebug(this, msg)
+    }
+
+    // Pass through
+    send(msg)
+
+    // We are done - not really needed probably
+    done()
+} // ----- end of inputMsgHandler ----- //
+
+// #endregion ----- Module-level support functions ----- //
+
+// Export the module definition (1), this is consumed by Node-RED on startup.
+module.exports = ModuleDefinition
+
+// EOF
