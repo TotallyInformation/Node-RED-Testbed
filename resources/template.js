@@ -21,8 +21,8 @@ function onEditPrepare(node) {
 // @ts-ignore
 RED.nodes.registerType(moduleName, {
     defaults: {
-        name: { value: '' },
-        topic: { value: '' },
+        name: { value: '', },
+        topic: { value: '', },
     },
     align: 'left',
     inputs: 1,

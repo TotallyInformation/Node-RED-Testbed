@@ -35,7 +35,7 @@ const NrClass = require('../libs/nr-class.cjs')
 function whatIsRED(RED) {
     console.groupCollapsed('KEYs of RED')
     Object.keys(RED).forEach( (key) => {
-        console.log(`${key}: `, Object.keys(RED[key]))
+        console.log(`⚙️ [ti-class:whatIsRED] ${key}: `, Object.keys(RED[key]))
     })
     console.groupEnd()
 }
@@ -59,7 +59,7 @@ class TiClassNode extends NrClass {
 
     constructor() {
         super()
-        console.log('>> TiClassNode:constructor >>', this.nodeName)
+        console.log('⚙️ [ti-class:constructor] >>', this.nodeName)
     }
 }
 

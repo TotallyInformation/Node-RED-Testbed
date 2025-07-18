@@ -35,19 +35,19 @@ class NrNode {
     // #endregion ---- ---- ----
 
     constructor() {
-        console.log('>> NrNode:constructor >>', this.nodeName)
+        console.log('⚙️ [nr-class:NrNode:constructor] >>', this.nodeName)
     }
 
     /** 1) Complete module definition for our Node. This is where things actually start.
      * @param {runtimeRED} RED The Node-RED runtime object
      */
     start(RED) {
-        console.log('>> NrNode:start >>', this.nodeName)
+        console.log('⚙️ [nr-class:NrNode:start] >>', this.nodeName)
         // Save a reference to the RED runtime for convenience
         try {
             this.RED = RED || arguments[0]
         } catch (e) {
-            console.error('Could not access `this`. Make sure you bind the start fn to the class instance.')
+            console.error('⚙️ [nr-class:NrNode:start] Could not access `this`. Make sure you bind the start fn to the class instance.')
         }
         // This is required to give nodeInstance the correct prototype. https://discourse.nodered.org/t/options-for-simplifying-custom-node-runtime-code/84576/19?u=totallyinformation
         this.nodeInstance.prototype = Object.getPrototypeOf(this.nodeInstance)
@@ -55,7 +55,7 @@ class NrNode {
             /** Register a new instance of the specified node type (2) */
             this.RED.nodes.registerType(this.nodeName, this.nodeInstance)
         } catch (e) {
-            console.trace(`constructor error. ${e.message}`)
+            console.trace(`⚙️ [nr-class:NrNode:start] constructor error. ${e.message}`)
         }
     }
 
@@ -65,15 +65,14 @@ class NrNode {
      * this {runtimeNode & tiDummyNode}
      */
     nodeInstance(config) {
-        console.log('>> NrNode:nodeInstance >>')
-        console.log('>> NrNode:nodeInstance `this` 1 >>', Object.keys(this))
+        console.log('⚙️ [nr-class:NrNode:nodeInstance] `this` 1 >>', Object.keys(this))
         // There is nothing in here because this is never reached, failure is higher up
         try {
             this.RED.nodes.createNode(this, config)
         } catch (e) {
-            console.trace(`nodeInstance - ${e.message}`, e)
+            console.trace(`⚙️ [nr-class:NrNode:nodeInstance] - ${e.message}`, e)
         }
-        console.log('>> NrNode:nodeInstance `this` 2 >>', Object.keys(this))
+        console.log('⚙️ [nr-class:NrNode:nodeInstance] `this` 2 >>', Object.keys(this))
     } // ---- End of nodeInstance ---- //
 }
 

@@ -46,14 +46,13 @@ const mod = {
 
 // #region ----- Module-level support functions ----- //
 
-/**
- * Examine the RED object's top-2 levels of properties
+/** Examine the RED object's top-2 levels of properties
  * @param {object} RED The RED global object
  */
 function whatIsRED(RED) {
     console.groupCollapsed('KEYs of RED')
     const util = require('util')
-    console.log(util.inspect(RED, { showHidden: false, depth: 1, colors: true, }))
+    console.log('⚙️ [ti-dummy:whatIsRED] >> ', util.inspect(RED, { showHidden: false, depth: 1, colors: true, }))
 
     // Object.keys(RED).forEach( key => {
     //     console.log(`${key}: `, Object.keys(RED[key]))
@@ -61,15 +60,13 @@ function whatIsRED(RED) {
     console.groupEnd()
 }
 
-/**
- * Examine the node instance object's top-2 levels of properties
+/** Examine the node instance object's top-2 levels of properties
  * @param {runtimeNode & tiDummyNode} node The node object
  */
-// @ts-ignore
 function whatIsThis(node) {
     console.groupCollapsed('KEYs of NODE')
     const util = require('util')
-    console.log(util.inspect(node, { showHidden: false, depth: 0, colors: true, }))
+    console.log('⚙️ [ti-dummy:whatIsThis] >> ', util.inspect(node, { showHidden: false, depth: 0, colors: true, }))
 
     // Object.keys(node).forEach( key => {
     //     console.log(`${key}: `, Object.keys(node[key]))
@@ -148,7 +145,7 @@ function nodeInstance(config) {
     setTimeout(() => {
         // whatIsRED(RED)
 
-        console.log('>> ti-dummy >> sending >>')
+        console.log('⚙️ [ti-dummy:nodeInstance] >> sending >>')
         // These don't seem to work
         RED.comms.publish('ti-testbed:test', { data: 'hello', })
         RED.events.emit('ti-testbed:test2', { data: 'hello2', })
@@ -156,7 +153,7 @@ function nodeInstance(config) {
         RED.events.emit('runtime-event', {
             id: 'test123',
             payload: {
-                text: '[ti-testbed:dummy:runtimeevent] Some error happened on server side',
+                text: '⚙️ [ti-testbed:dummy:runtimeevent] Some error happened on server side',
                 type: 'error',
                 timeout: 6000,
             },
@@ -172,14 +169,14 @@ function nodeInstance(config) {
                 path: this._flow.path,
                 name: this.name,
                 topic: 'ti-testbed:dummy:testevent',
-                msg: { payload: 'hello - message from the dummy nodes runtime', },
+                msg: { payload: '⚙️ hello - message from the dummy nodes runtime', },
             },
             { maxLength: 1000, }
         )
         RED.comms.publish('debug', msg2)
 
         // Experiment: Post a message to uibuilder url sender-test
-        RED.events.emit('UIBUILDER/sender-test', { data: 'Hello from ti-dummy testbed!', } )
+        RED.events.emit('UIBUILDER/sender-test', { data: '⚙️ Hello from ti-dummy testbed!', } )
     }, 3000)
 } // ---- End of nodeInstance ---- //
 
