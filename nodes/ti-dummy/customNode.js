@@ -1,6 +1,7 @@
+/* eslint-disable jsdoc/valid-types */
 /** A dummy node for experimentation
  *
- * Copyright (c) 2023-2023 Julian Knight (Totally Information)
+ * Copyright (c) 2023-2025 Julian Knight (Totally Information)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +24,11 @@
  * @typedef {import('../../typedefs').tiDummyNode} tiDummyNode <= Change this to be specific to this node
  */
 
-//#region ----- Module level variables ---- //
+// #region ----- Module level variables ---- //
 
 // Uncomment this if you want to use the promisified version of evaluateNodeProperty
 // const { promisify } = require('util')
-const { getSource } = require('../libs/uiblib')
+const { getSource, } = require('../libs/uiblib.cjs')
 
 /** Main (module) variables - acts as a configuration object
  *  that can easily be passed around.
@@ -41,9 +42,9 @@ const mod = {
     nodeName: 'ti-dummy', // <== CHANGE
 }
 
-//#endregion ----- Module level variables ---- //
+// #endregion ----- Module level variables ---- //
 
-//#region ----- Module-level support functions ----- //
+// #region ----- Module-level support functions ----- //
 
 /**
  * Examine the RED object's top-2 levels of properties
@@ -52,7 +53,7 @@ const mod = {
 function whatIsRED(RED) {
     console.groupCollapsed('KEYs of RED')
     const util = require('util')
-    console.log(util.inspect(RED, { showHidden: false, depth: 1, colors: true }))
+    console.log(util.inspect(RED, { showHidden: false, depth: 1, colors: true, }))
 
     // Object.keys(RED).forEach( key => {
     //     console.log(`${key}: `, Object.keys(RED[key]))
@@ -65,10 +66,10 @@ function whatIsRED(RED) {
  * @param {runtimeNode & tiDummyNode} node The node object
  */
 // @ts-ignore
-function whatIsThis(node) { // eslint-disable-line no-unused-vars
+function whatIsThis(node) {
     console.groupCollapsed('KEYs of NODE')
     const util = require('util')
-    console.log(util.inspect(node, { showHidden: false, depth: 0, colors: true }))
+    console.log(util.inspect(node, { showHidden: false, depth: 0, colors: true, }))
 
     // Object.keys(node).forEach( key => {
     //     console.log(`${key}: `, Object.keys(node[key]))
@@ -149,16 +150,16 @@ function nodeInstance(config) {
 
         console.log('>> ti-dummy >> sending >>')
         // These don't seem to work
-        RED.comms.publish('ti-testbed:test', { data: 'hello' })
-        RED.events.emit('ti-testbed:test2', { data: 'hello2' })
+        RED.comms.publish('ti-testbed:test', { data: 'hello', })
+        RED.events.emit('ti-testbed:test2', { data: 'hello2', })
         // This works - Shows a node-red admin notification popup
         RED.events.emit('runtime-event', {
             id: 'test123',
             payload: {
                 text: '[ti-testbed:dummy:runtimeevent] Some error happened on server side',
                 type: 'error',
-                timeout: 6000
-            }
+                timeout: 6000,
+            },
         })
         // This works, outputs to debug panel
         // console.log('this._flow', this._flow)
@@ -171,18 +172,18 @@ function nodeInstance(config) {
                 path: this._flow.path,
                 name: this.name,
                 topic: 'ti-testbed:dummy:testevent',
-                msg: { payload: 'hello - message from the dummy nodes runtime' },
+                msg: { payload: 'hello - message from the dummy nodes runtime', },
             },
-            { maxLength: 1000 }
+            { maxLength: 1000, }
         )
         RED.comms.publish('debug', msg2)
 
         // Experiment: Post a message to uibuilder url sender-test
-        RED.events.emit('UIBUILDER/sender-test', {data: 'Hello from ti-dummy testbed!'} )
+        RED.events.emit('UIBUILDER/sender-test', { data: 'Hello from ti-dummy testbed!', } )
     }, 3000)
 } // ---- End of nodeInstance ---- //
 
-//#endregion ----- Module-level support functions ----- //
+// #endregion ----- Module-level support functions ----- //
 
 /** 3) Run whenever a node instance receives a new input msg
  * NOTE: `this` context is still the parent (nodeInstance).
@@ -192,8 +193,7 @@ function nodeInstance(config) {
  * @param {Function} done Per msg finish function, node-red v1+
  * @this {runtimeNode & tiDummyNode}
  */
-async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
-
+async function inputMsgHandler(msg, send, done) {
     const RED = mod.RED
 
     // Get all of the typed input values (in parallel)
@@ -213,7 +213,7 @@ async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unus
     msg.tyiNode = this.tyiNode
 
     const that = this
-    console.log({ that })
+    console.log({ that, })
 
     // Pass straight through
     send(msg)

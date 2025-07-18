@@ -1,6 +1,7 @@
+/* eslint-disable jsdoc/valid-types */
 /** An example template for Node-RED custom nodes
  *
- * Copyright (c) 2023-2023 Julian Knight (Totally Information)
+ * Copyright (c) 2023-2025 Julian Knight (Totally Information)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@
  * @typedef {import('../../typedefs').tiTemplateNode} tiTemplateNode <= Change this to be specific to this node
  */
 
-//#region ----- Module level variables ---- //
+// #region ----- Module level variables ---- //
 
 // Uncomment this if you want to use the promisified version of evaluateNodeProperty
 // const { promisify } = require('util')
@@ -40,9 +41,9 @@ const mod = {
     nodeName: 'ti-template', // <== CHANGE
 }
 
-//#endregion ----- Module level variables ---- //
+// #endregion ----- Module level variables ---- //
 
-//#region ----- Module-level support functions ----- //
+// #region ----- Module-level support functions ----- //
 
 /** 1) Complete module definition for our Node. This is where things actually start.
  * @param {runtimeRED} RED The Node-RED runtime object
@@ -91,8 +92,7 @@ function nodeInstance(config) {
  * @param {Function} done Per msg finish function, node-red v1+
  * @this {runtimeNode & tiTemplateNode}
  */
-async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unused-vars
-
+async function inputMsgHandler(msg, send, done) {
     // const RED = mod.RED
 
     // Pass straight through
@@ -102,7 +102,7 @@ async function inputMsgHandler(msg, send, done) { // eslint-disable-line no-unus
     done()
 } // ----- end of inputMsgHandler ----- //
 
-//#endregion ----- Module-level support functions ----- //
+// #endregion ----- Module-level support functions ----- //
 
 // Export the module definition (1), this is consumed by Node-RED on startup.
 module.exports = ModuleDefinition
