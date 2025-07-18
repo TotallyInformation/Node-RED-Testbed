@@ -1,6 +1,6 @@
 {
   "name": "@totallyinformation/node-red-testbed",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A blank canvas to test out ideas for Node-RED custom nodes",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -39,25 +39,25 @@
     "gulp-uglify": "^3.0.2"
   },
   "node-red": {
-    "version": ">=3",
+    "version": ">=4",
     "nodes": {
       "ti-dummy": "nodes/ti-dummy/customNode.js",
-      "ti-class": "nodes/ti-class/customNode.js"
+      "ti-class": "nodes/ti-class/customNode.cjs"
     },
     "plugins": {
       "ti-dummy-edit-plugin": "nodes/ti-testbed-common-editor-plugin.html",
-      "ti-dummy-runtime-plugin": "nodes/ti-testbed-runtime-plugin.js"
+      "ti-dummy-runtime-plugin": "nodes/ti-testbed-runtime-plugin.cjs"
     }
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18.5"
   },
   "directories": {
     "example": "./examples",
     "doc": "./docs",
     "lib": "./nodes"
   },
-  "main": "./nodes/ti-dummy/customNode.js",
+  "main": "./nodes/ti-dummy/customNode.cjs",
   "browser": "",
   "style": "",
   "types": "index.d.ts",
