@@ -1,6 +1,7 @@
+/* eslint-disable jsdoc/valid-types */
 /** A dummy node for experimentation
  *
- * Copyright (c) 2023-2023 Julian Knight (Totally Information)
+ * Copyright (c) 2023-2025 Julian Knight (Totally Information)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +24,9 @@
  * @typedef {import('../../typedefs').tiDummyNode} tiDummyNode <= Change this to be specific to this node
  */
 
-const NrClass = require('../libs/nr-class')
+const NrClass = require('../libs/nr-class.cjs')
 
-
-//#region ---- Utility functions ----
+// #region ---- Utility functions ----
 
 /**
  * Examine the RED object's top-2 levels of properties
@@ -34,7 +34,7 @@ const NrClass = require('../libs/nr-class')
  */
 function whatIsRED(RED) {
     console.groupCollapsed('KEYs of RED')
-    Object.keys(RED).forEach( key => {
+    Object.keys(RED).forEach( (key) => {
         console.log(`${key}: `, Object.keys(RED[key]))
     })
     console.groupEnd()
@@ -46,13 +46,13 @@ function whatIsRED(RED) {
  */
 function whatIsThis(node) {
     console.groupCollapsed('KEYs of NODE')
-    Object.keys(node).forEach( key => {
+    Object.keys(node).forEach( (key) => {
         console.log(`${key}: `, Object.keys(node[key]))
     })
     console.groupEnd()
 }
 
-//#endregion ---- ---- ----
+// #endregion ---- ---- ----
 
 class TiClassNode extends NrClass {
     nodeName = 'ti-class'
