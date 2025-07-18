@@ -18,6 +18,104 @@ const moduleName = 'threw-out' // <== CHANGE to match the name of this file
 function onEditPrepare(node) {
     // log.log('onEditPrepare', node)
 
+    const autoType = {
+        value: 'auto',
+        label: RED._('node-red:debug.autostatus'),
+        hasValue: false,
+    }
+
+    const counter = {
+        value: 'counter',
+        label: RED._('node-red:debug.messageCount'),
+        hasValue: false,
+    }
+
+    $('#node-input-typed-status').typedInput({
+        default: 'counter',
+        types: [counter, autoType, 'msg', 'jsonata'],
+        typeField: $('#node-input-statusType'),
+    })
+    const none = {
+        value: 'none',
+        label: RED._('node-red:debug.none'),
+        hasValue: false,
+    }
+    if (node.tosidebar === undefined) {
+        node.tosidebar = true
+        $('#node-input-tosidebar').prop('checked', true)
+    }
+    if (node.statusVal === undefined) {
+        node.statusVal = (node.complete === 'false') ? 'payload' : ((node.complete === 'true') ? 'payload' : `${node.complete}`)
+        $('#node-input-typed-status').typedInput('value', node.statusVal || '')
+    }
+    if (node.statusType === undefined) {
+        node.statusType = 'auto'
+        $('#node-input-typed-status').typedInput('type', node.statusType || 'auto')
+    }
+    if (typeof node.console === 'string') {
+        node.console = (node.console == 'true')
+        $('#node-input-console').prop('checked', node.console)
+        $('#node-input-tosidebar').prop('checked', true)
+    }
+    const fullType = {
+        value: 'full',
+        label: RED._('node-red:debug.msgobj'),
+        hasValue: false,
+    }
+
+    $('#node-input-typed-complete').typedInput({
+        default: 'msg',
+        types: ['msg', fullType, 'jsonata'],
+        typeField: $('#node-input-targetType'),
+    })
+    if (node.targetType === 'jsonata') {
+        const property = node.complete || ''
+        $('#node-input-typed-complete').typedInput('type', 'jsonata')
+        $('#node-input-typed-complete').typedInput('value', property)
+    } else if ((node.targetType === 'full') || node.complete === 'true' || node.complete === true) {
+        // show complete message object
+        $('#node-input-typed-complete').typedInput('type', 'full')
+    } else {
+        const property = (!node.complete || (node.complete === 'false')) ? 'payload' : `${node.complete}`
+        $('#node-input-typed-complete').typedInput('type', 'msg')
+        $('#node-input-typed-complete').typedInput('value', property)
+    }
+    $('#node-input-typed-complete').on('change', function() {
+        if ($('#node-input-typed-complete').typedInput('type') === 'msg'
+            && $('#node-input-typed-complete').typedInput('value') === ''
+        ) {
+            $('#node-input-typed-complete').typedInput('value', 'payload')
+        }
+    })
+
+    $('#node-input-tostatus').on('change', function() {
+        if ($(this).is(':checked')) {
+            if (node.statusType === 'counter') {
+                node.statusVal = ''
+            } else if (
+                !Object.prototype.hasOwnProperty.call(node, 'statusVal')
+                || node.statusVal === ''
+            ) {
+                const type = $('#node-input-typed-complete').typedInput('type')
+                let comp = 'payload'
+                if (type !== 'full') {
+                    comp = $('#node-input-typed-complete').typedInput('value')
+                }
+                node.statusType = 'counter'
+                node.statusVal = comp
+            }
+            $('#node-input-typed-status').typedInput('type', node.statusType)
+            $('#node-input-typed-status').typedInput('value', node.statusVal)
+            $('#node-tostatus-line').show()
+        } else {
+            $('#node-tostatus-line').hide()
+            node.statusType = 'counter'
+            node.statusVal = ''
+            $('#node-input-typed-status').typedInput('type', node.statusType)
+            $('#node-input-typed-status').typedInput('value', node.statusVal)
+        }
+    })
+
     tiTestbed.doTooltips('#ti-edit-panel') // Do this at the end
 } // ----- end of onEditPrepare() ----- //
 
@@ -25,9 +123,14 @@ function onEditPrepare(node) {
 RED.nodes.registerType(moduleName, {
     defaults: {
         name: { value: '_DEFAULT_', },
-        topic: { value: '', },
         active: { value: true, },
-        console: { value: true, },
+        tosidebar: { value: true, },
+        console: { value: false, },
+        tostatus: { value: false, },
+        complete: { value: 'false', required: true, },
+        targetType: { value: undefined, },
+        statusVal: { value: '', },
+        statusType: { value: 'counter', },
     },
     align: 'left',
     inputs: 1,
@@ -36,11 +139,12 @@ RED.nodes.registerType(moduleName, {
     outputLabels: ['Output 1'],
     icon: 'debug.svg', // 'font-awesome/fa-code',
     label: function () {
-        return this.name || moduleName
+        return '↘' // this.name || moduleName
     },
     category: tiTestbed.paletteCategory,
     color: '#87a980', // 'var(--ti-testbed-node-colour)',
     paletteLabel: moduleName,
+    showLabel: false,
 
     /** Prepares the Editor panel */
     oneditprepare: function () { onEditPrepare(this) },
@@ -54,6 +158,10 @@ RED.nodes.registerType(moduleName, {
             this.name = ''
             RED.actions.invoke('core:generate-node-names', this, { generateHistory: false, })
         }
+    },
+    oneditsave: function() {
+        console.log('onEditSave', this)
+        return true
     },
 
     /** Available methods:

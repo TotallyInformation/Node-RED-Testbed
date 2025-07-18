@@ -19,20 +19,43 @@
 <script type="text/html" data-template-name="threw-out">
     <div id="ti-testbed-edit-panel">
     
-        <div aria-label="Default msg topic. Make unique if using uib-cache." class="form-row">
-            <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
-            <input type="text" id="node-input-topic">
+        <div class="form-row">
+            <label for="node-input-typed-complete"><i class="fa fa-list"></i> <span data-i18n="debug.output"></span></label>
+            <input id="node-input-typed-complete" type="text" style="width: 70%">
+            <input id="node-input-complete" type="hidden">
+            <input id="node-input-targetType" type="hidden">
         </div>
+        <div class="form-row">
+            <label for="node-input-tosidebar"><i class="fa fa-random"></i> <span data-i18n="debug.to"></span></label>
+            <label for="node-input-tosidebar" style="width:70%">
+                <input type="checkbox" id="node-input-tosidebar" style="display:inline-block; width:22px; vertical-align:top;">
+                <span data-i18n="debug.toSidebar">Debug Window</span>
+            </label>
+        </div>
+        <div class="form-row">
+            <label for="node-input-console"> </label>
+            <label for="node-input-console" style="width:70%">
+                <input type="checkbox" id="node-input-console" style="display:inline-block; width:22px; vertical-align:top;">
+                <span data-i18n="debug.toConsole">System Console</span>
+            </label>
+        </div>
+        <div class="form-row">
+            <label for="node-input-tostatus"> </label>
+            <label for="node-input-tostatus" style="width:70%">
+                <input type="checkbox" id="node-input-tostatus" style="display:inline-block; width:22px; vertical-align:top;">
+                <span data-i18n="debug.toStatus">Node Status (32 characters)</span>
+            </label>
+        </div>
+        <div class="form-row" id="node-tostatus-line">
+            <label for="node-input-typed-status"></label>
+            <input id="node-input-typed-status" type="text" style="width: 70%">
+            <input id="node-input-statusVal" type="hidden">
+            <input id="node-input-statusType" type="hidden">
+        </div>
+
         <div aria-label="Node name (descriptive only)" class="form-row">
             <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
             <input type="text" id="node-input-name">
         </div>
-        <div class="form-row">
-            <label for="node-input-console"> </label>
-            <label for="node-input-console">
-                <input type="checkbox" id="node-input-console"><span data-i18n="debug.toConsole"></span>
-            </label>
-        </div>
-
     </div>
 </script>

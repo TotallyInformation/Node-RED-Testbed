@@ -281,9 +281,14 @@
  * @typedef {object} tiThrewOutNode An example template for custom nodes
  *
  * @property {string} name Descriptive name, only used by Editor
- * @property {string} topic msg.topic overrides incoming msg.topic
  * @property {boolean} active Is debug output active? If not, passthrough only
+ * @property {boolean} tosidebar Is output to the Editor's debug sidebar active? If not, passthrough only
  * @property {boolean} console Is console output active? If not, passthrough only
+ * @property {boolean} tostatus Is output to the Editor's status bar active? If not, passthrough only
+ * @property {string} complete The type of output to send to the Editor's debug sidebar
+ * @property {string} targetType The type of output to send to the Editor's debug sidebar
+ * @property {string} statusVal The value to send to the Editor's status bar
+ * @property {string} statusType The type of value to send to the Editor's status
  */
 
 /** tiDummyNode
