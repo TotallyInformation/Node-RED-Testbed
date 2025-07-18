@@ -65,6 +65,7 @@
  * @property {object} [uibuilder.serverOptions] Optional ExpressJS server options for uib custom server
  * @property {object} [uibuilder.socketOptions] Override Socket.IO options if desired. See https://socket.io/docs/v4/server-options/
  * @property {boolean} [uibuilder.instanceApiAllowed] Allow instance-level custom API's to be loaded. Could be a security issue so it is controlled in settings.js
+ * @property {Function} [uibuilder.hooks] Provide hook functions
  *
  * @property {string} coreNodesDir Folder containing Node-RED core nodes
  * @property {string} version Node-RED version
@@ -181,6 +182,9 @@
  * @property {object} util.uib : Added by uibuilder.js - utility functions made available to function nodes
  * @property {Function} util.uib.deepObjFind : Recursive object deep find - https://totallyinformation.github.io/node-red-contrib-uibuilder/#/client-docs/config-driven-ui?id=manipulating-msg_ui
  * @property {Function} util.uib.listAllApps : Return a list of all uibuilder instances
+ * @property {Function} util.uib.dp : Return a formatted number using a specified locale and number of decimal places
+ * @property {Function} util.uib.send : Send a message to a client via a uibuilder instance
+ * @property {Function} util.uib.truthy : Returns true/false or a default value for truthy/falsy and other values
  *
  * @property {object} plugins Node-RED plugins
  * @property {Function} plugins.registerPlugin : [Function: registerPlugin],
@@ -191,6 +195,7 @@
 /** runtimeNode
  * @typedef {object} runtimeNode Local copy of the node instance config + other info
  * @property {Function} send Send a Node-RED msg to an output port
+ * @property {Function} receive Sends the node an input message (e.g. a msg to itself)
  * @property {Function} done Dummy done Function for pre-Node-RED 1.0 servers
  * @property {Function} context get/set context data. Also .flow and .global contexts
  * @property {Function} on Event listeners for the node instance ('input', 'close')
@@ -201,13 +206,15 @@
  * @property {Function} trace Trace level log output
  * @property {Function} debug Debug level log output
  * @property {Function} status Show a status message under the node in the Editor
+ *
  * @property {object=} credentials Optional secured credentials
- * @property {string=} name Internal.
- * @property {string=} id Internal. uid of node instance.
+ * @property {string=} name name of the node
+ * @property {string=} id id of the node
  * @property {string=} type Internal. Type of node instance.
  * @property {string=} z Internal. uid of ???
  * @property {string=} g Internal. uid of ???
  * @property {[Array<string>]=} wires Internal. Array of Array of strings. The wires attached to this node instance (uid's)
+ *
  * @property {number=} _wireCount Count of connected wires
  * @property {string=} _wire ID of connected wire
  * @property {[Array<Function>]=} _closeCallbacks ??
@@ -224,7 +231,7 @@
  * @property {object=} type Internal. Type of node instance.
  * @property {object=} x Internal
  * @property {object=} y Internal
- * @property {object=} z Internal
+ * @property {object=} z Internal. ID of the flow the node belongs to.
  * @property {object=} wires Internal. The wires attached to this node instance (uid's)
  */
 
@@ -234,6 +241,7 @@
  * @property {string} name Descriptive name, only used by Editor
  * @property {string} topic msg.topic overrides incoming msg.topic
  * @property {string} url The url path (and folder path) to be used by this instance
+ * @property {boolean} okToGo Is the url valid for this node or not? Not passed into the node, only used to stop processing.
  * @property {string} oldUrl The PREVIOUS url path (and folder path) after a url rename
  * @property {boolean} fwdInMessages Forward input msgs to output #1?
  * @property {boolean} allowScripts Allow scripts to be sent to front-end via msg? WARNING: can be a security issue.
@@ -257,6 +265,7 @@
  * @property {string} ioNamespace Make sure each node instance uses a separate Socket.IO namespace
  * @property {string} title Short descriptive title for the instance
  * @property {string} descr Longer description for the instance
+ * @property {string} editurl Shortcut URL that will open a code editor at the node instance folder
  */
 
 /** tiTemplateNode
