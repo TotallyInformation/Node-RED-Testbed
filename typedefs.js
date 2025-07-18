@@ -1,3 +1,5 @@
+/* eslint-disable jsdoc/valid-types */
+/* eslint-disable jsdoc/no-undefined-types */
 // @ts-nocheck
 /* eslint-disable no-irregular-whitespace */
 /** Define typedefs for linting and JSDoc/ts checks - does not actually contain live code
