@@ -21,13 +21,16 @@
  * @typedef {import('../../typedefs').runtimeRED} runtimeRED
  * @typedef {import('../../typedefs').runtimeNodeConfig} runtimeNodeConfig
  * @typedef {import('../../typedefs').runtimeNode} runtimeNode
+ * @typedef {import('../../typedefs').runtimeDebugOutput} runtimeDebugOutput
  * @typedef {import('../../typedefs').tiThrewOutNode} tiThrewOutNode <= Change this to be specific to this node
  */
 
 // #region ----- Module level variables ---- //
 
 // Uncomment this if you want to use the promisified version of evaluateNodeProperty
-// const { promisify } = require('util')
+// const { promisify } = require('node:util')
+
+const util = require('node:util')
 
 /** Main (module) variables - acts as a configuration object
  *  that can easily be passed around.
@@ -47,25 +50,96 @@ const mod = {
 
 // #region ----- Module-level support functions ----- //
 
-/** Examine the RED object's top-2 levels of properties
- * @param {runtimeNode & tiThrewOutNode} node The RED global object
- * @param {object} msg The msg object to output.
+/** Send somthing to the Editor's debug sidebar
+ * @param {object} commsMsg A comms msg object to output to debug (not the original msg)
  */
-function sendDebug(node, msg) {
-    // console.log('sendDebug', msg, mod.RED.util.encodeObject(msg, { maxLength: mod.debuglength, }))
-    console.log('sendDebug', msg)
-    const newmsg = mod.RED.util.encodeObject(
-        {
+function sendDebug(commsMsg) {
+    const newmsg = mod.RED.util.encodeObject(commsMsg, { maxLength: mod.debuglength, })
+    mod.RED.comms.publish('debug', newmsg)
+}
+
+/** Prepare the value to send to the Editor's debug sidebar
+ * @param {runtimeNode & tiThrewOutNode} node The node instance
+ * @param {object} msg The message object
+ * @param {Function} done The callback function to call when done
+ */
+function prepareValue(node, msg, done) {
+    const RED = mod.RED
+
+    // Either apply the jsonata expression or...
+    if (node.preparedEditExpression) {
+        RED.util.evaluateJSONataExpression(node.preparedEditExpression, msg, (err, value) => {
+            if (err) {
+                done(RED._('debug.invalid-exp', { error: node.editExpression, }))
+            } else {
+                done(null, {
+                    id: node.id, z: node.z, _alias: node._alias,
+                    path: node._flow.path, name: node.name,
+                    topic: msg.topic, msg: value,
+                })
+            }
+        })
+    } else {
+        // Extract the required message property
+        let property = 'payload'
+        let output = msg[property]
+        if (node.complete !== 'false' && typeof node.complete !== 'undefined') {
+            property = node.complete
+            try {
+                output = RED.util.getMessageProperty(msg, node.complete)
+            } catch(err) {
+                output = undefined
+            }
+        }
+        done(null, {
             id: node.id, z: node.z, _alias: node._alias,
             path: node._flow.path, name: node.name,
-            topic: msg.topic,
-            msg: msg,
-        },
-        {
-            maxLength: mod.debuglength,
+            topic: msg.topic, property: property, msg: output,
+        })
+    }
+}
+
+/** Prepare the value to send to the Editor's status bar
+ * @param {runtimeNode & tiThrewOutNode} node The node instance
+ * @param {object} msg The message object
+ * @param {Function} done The callback function to call when done
+ */
+function prepareStatus(node, msg, done) {
+    const RED = mod.RED
+
+    if (node.statusType === 'auto') {
+        if (node.complete === 'true') {
+            done(null, { msg: msg.payload, })
+        } else {
+            prepareValue(node, msg, (err, debugMsg) => {
+                if (err) {
+                    node.error(err)
+                    return
+                }
+                done(null, { msg: debugMsg.msg, })
+            })
         }
-    )
-    mod.RED.comms.publish('debug', newmsg)
+    } else {
+        // Either apply the jsonata expression or...
+        if (node.preparedStatExpression) {
+            RED.util.evaluateJSONataExpression(node.preparedStatExpression, msg, (err, value) => {
+                if (err) {
+                    done(node._('debug.invalid-exp', { error: node.editExpression, }))
+                } else {
+                    done(null, { msg: value, })
+                }
+            })
+        } else {
+            // Extract the required message property
+            let output
+            try {
+                output = RED.util.getMessageProperty(msg, this.statusVal)
+            } catch(err) {
+                output = undefined
+            }
+            done(null, { msg: output, })
+        }
+    }
 }
 
 /** 1) Complete module definition for our Node. This is where things actually start.
@@ -78,6 +152,9 @@ function ModuleDefinition(RED) {
     mod.RED = RED
 
     mod.debuglength = RED.settings.debugMaxLength || 1000
+    mod.statuslength = RED.settings.debugStatusLength || 32
+    mod.useColors = RED.settings.debugUseColors || false
+    util.inspect.styles.boolean = 'red'
 
     // Save a ref to a promisified version to simplify async callback handling
     // mod.evaluateNodeProperty = promisify(mod.RED.util.evaluateNodeProperty)
@@ -98,14 +175,74 @@ function nodeInstance(config) {
     const RED = mod.RED
     if (RED === null) return
 
+    const hasEditExpression = config.targetType === 'jsonata'
+
     // @ts-ignore Create the node instance - `this` can only be referenced AFTER here
     RED.nodes.createNode(this, config)
 
+    this.isDebugging = config.tosidebar || config.tostatus || config.console
+
     /** Transfer config items from the Editor panel to the runtime */
     this.name = config.name ?? ''
-    this.topic = config.topic ?? ''
     this.active = config.active ?? true
-    this.console = config.console ?? true
+    this.tosidebar = config.tosidebar ?? true
+    this.console = config.console ?? false
+    this.tostatus = config.tostatus ?? false
+    this.complete = hasEditExpression ? null : (config.complete || 'payload').toString() // config.complete ?? 'false'
+    this.targetType = config.targetType ?? undefined
+    this.statusVal = config.statusVal ?? this.complete
+    this.statusType = config.statusType ?? 'counter'
+
+    if (this.complete === 'false') this.complete = 'payload'
+
+    this.counter = 0
+    this.lastTime = new Date().getTime()
+    this.timeout = null
+    if (this.tosidebar === undefined) {
+        this.tosidebar = true
+    }
+    this.active = (config.active === null || typeof config.active === 'undefined') || config.active
+    if (this.tostatus) {
+        this.status({ fill: 'grey', shape: 'ring', })
+        this.oldState = '{}'
+    }
+    this.editExpression = hasEditExpression ? config.complete : null
+
+    const hasStatExpression = (config.statusType === 'jsonata')
+    const statExpression = hasStatExpression ? config.statusVal : null
+
+    if ( this.statusType === 'counter' ) {
+        this.status({ fill: 'blue', shape: 'ring', text: this.counter, })
+    } else {
+        this.status({ fill: '', shape: '', text: '', })
+    }
+    this.preparedEditExpression = null
+    this.preparedStatExpression = null
+    if (this.editExpression) {
+        try {
+            this.preparedEditExpression = RED.util.prepareJSONataExpression(this.editExpression, this)
+        } catch (e) {
+            this.error(RED._('debug.invalid-exp', { error: this.editExpression, }))
+            return
+        }
+    }
+    if (statExpression) {
+        try {
+            this.preparedStatExpression = RED.util.prepareJSONataExpression(statExpression, this)
+        } catch (e) {
+            this.error(RED._('debug.invalid-exp', { error: this.editExpression, }))
+            return
+        }
+    }
+
+    this.on('close', function() {
+        if (this.oldState) {
+            this.status({})
+        }
+        if (this.timeout) {
+            clearTimeout(this.timeout)
+        }
+    })
 
     /** Handle incoming msg's - note that the handler fn inherits `this` */
     this.on('input', inputMsgHandler)
@@ -122,8 +259,113 @@ function nodeInstance(config) {
 async function inputMsgHandler(msg, send, done) {
     // const RED = mod.RED
 
-    if (this.console) {
-        sendDebug(this, msg)
+    // if (this.active && this.tosidebar) {
+    //     sendDebug(this, msg)
+    // }
+
+    if (this.isDebugging) {
+        if (
+            Object.hasOwnProperty.call(msg, 'status')
+            && Object.hasOwnProperty.call(msg.status, 'source')
+            && Object.hasOwnProperty.call(msg.status.source, 'id')
+            && (msg.status.source.id === this.id)
+        ) {
+            done()
+            return
+        }
+        if (this.tostatus === true) {
+            if ( this.statusType === 'counter' ) {
+                const differenceOfTime = (new Date().getTime() - this.lastTime)
+                this.lastTime = new Date().getTime()
+                this.counter++
+                if ( differenceOfTime > 100 ) {
+                    this.status({ fill: 'blue', shape: 'ring', text: this.counter, })
+                } else {
+                    if (this.timeout) {
+                        clearTimeout(this.timeout)
+                    }
+                    this.timeout = setTimeout(() => {
+                        this.status({ fill: 'blue', shape: 'ring', text: this.counter, })
+                    }, 200)
+                }
+            } else {
+                prepareStatus(this, msg, (err, debugMsg) => {
+                    if (err) {
+                        this.error(err)
+                        return
+                    }
+                    const output = debugMsg.msg
+                    let st = (typeof output === 'string') ? output : util.inspect(output)
+                    let fill = 'grey'
+                    let shape = 'dot'
+                    if (typeof output === 'object' && output?.fill && output?.shape && output?.text) {
+                        fill = output.fill
+                        shape = output.shape
+                        st = output.text
+                    }
+                    if (this.statusType === 'auto') {
+                        if (Object.hasOwnProperty.call(msg, 'error')) {
+                            fill = 'red'
+                            st = msg.error.message
+                        }
+                        if (Object.hasOwnProperty.call(msg, 'status')) {
+                            fill = msg.status.fill || 'grey'
+                            shape = msg.status.shape || 'ring'
+                            st = msg.status.text || ''
+                        }
+                    }
+
+                    if (st.length > mod.statuslength) {
+                        st = `${st.slice(0, mod.statuslength)}}...`
+                    }
+
+                    const newStatus = { fill: fill, shape: shape, text: st, }
+                    if (JSON.stringify(newStatus) !== this.oldState) { // only send if we have to
+                        this.status(newStatus)
+                        this.oldState = JSON.stringify(newStatus)
+                    }
+                })
+            }
+        }
+
+        if (this.complete === 'true') {
+            // debug complete msg object
+            if (this.console === true) {
+                this.log(`\n${util.inspect(msg, { colors: mod.useColors, depth: 10, })}`)
+            }
+            if (this.active && this.tosidebar) {
+                // @ts-ignore
+                sendDebug({
+                    id: this.id, z: this.z, _alias: this._alias,
+                    path: this._flow.path, name: this.name,
+                    topic: msg.topic, msg: msg,
+                })
+            }
+            done()
+        } else {
+            prepareValue(this, msg, (err, debugMsg) => {
+                if (err) {
+                    this.error(err)
+                    return
+                }
+                const output = debugMsg.msg
+                if (this.console === true) {
+                    if (typeof output === 'string') {
+                        this.log((output.indexOf('\n') !== -1 ? '\n' : '') + output)
+                    } else if (typeof output === 'object') {
+                        this.log(`\n${util.inspect(output, { colors: mod.useColors, depth: 10, })}`)
+                    } else {
+                        this.log(util.inspect(output, { colors: mod.useColors, }))
+                    }
+                }
+                if (this.active) {
+                    if (this.tosidebar == true) {
+                        sendDebug(debugMsg)
+                    }
+                }
+                done()
+            })
+        }
     }
 
     // Pass through

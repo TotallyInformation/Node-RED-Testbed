@@ -209,9 +209,6 @@ async function inputMsgHandler(msg, send, done) {
     msg.tyiExpr = this.tyiExpr
     msg.tyiNode = this.tyiNode
 
-    const that = this
-    console.log({ that, })
-
     // Pass straight through
     send(msg)
 

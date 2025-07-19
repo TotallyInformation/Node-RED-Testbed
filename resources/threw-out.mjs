@@ -49,8 +49,8 @@ function onEditPrepare(node) {
         $('#node-input-typed-status').typedInput('value', node.statusVal || '')
     }
     if (node.statusType === undefined) {
-        node.statusType = 'auto'
-        $('#node-input-typed-status').typedInput('type', node.statusType || 'auto')
+        node.statusType = 'counter'
+        $('#node-input-typed-status').typedInput('type', node.statusType || 'counter')
     }
     if (typeof node.console === 'string') {
         node.console = (node.console == 'true')
@@ -139,7 +139,8 @@ RED.nodes.registerType(moduleName, {
     outputLabels: ['Output 1'],
     icon: 'debug.svg', // 'font-awesome/fa-code',
     label: function () {
-        return '↘' // this.name || moduleName
+        const myActive = this.tosidebar || this.tostatus || this.console
+        return `${myActive ? '◉' : '◎'} ${this.name || moduleName}`
     },
     category: tiTestbed.paletteCategory,
     color: '#87a980', // 'var(--ti-testbed-node-colour)',
@@ -160,7 +161,22 @@ RED.nodes.registerType(moduleName, {
         }
     },
     oneditsave: function() {
-        console.log('onEditSave', this)
+        if (!this.tosidebar && !this.tostatus && !this.console) {
+            // If all outputs are disabled, then disable the node
+            this.active = false
+        } else {
+            this.active = true
+        }
+
+        const type = $('#node-input-typed-complete').typedInput('type')
+        if (type === 'full') {
+            $('#node-input-complete').val('true')
+        } else {
+            $('#node-input-complete').val($('#node-input-typed-complete').typedInput('value'))
+        }
+        $('#node-input-statusVal').val($('#node-input-typed-status').typedInput('value'))
+
+        // console.log('onEditSave', this)
         return true
     },
 

@@ -38,6 +38,7 @@
  * @property {Function} mqttReconnectTime : [Getter/Setter],
  * @property {Function} serialReconnectTime : [Getter/Setter],
  * @property {number} debugMaxLength : [Getter/Setter],
+ * @property {number} debugStatusLength : [Getter/Setter],
  * @property {Function} debugUseColors : [Getter/Setter],
  * @property {string} flowFile : [Getter/Setter],
  * @property {Function} flowFilePretty : [Getter/Setter],
@@ -139,6 +140,7 @@
  * @property {Function} version Get the Node-RED version [Function: getVersion],
  * @property {Function} require : [Function: requireModule],
  * @property {Function} import : [Function: importModule],
+ * @property {Function} _ Locale translation function. Use with `RED._('key')`
  *
  * @property {object} auth :
  * @property {Function} auth.needsPermission : [Function: needsPermission]
@@ -208,6 +210,7 @@
  * @property {Function} trace Trace level log output
  * @property {Function} debug Debug level log output
  * @property {Function} status Show a status message under the node in the Editor
+ * @property {Function} _ Locale translation function. Use with `node._('key')`
  *
  * @property {object=} credentials Optional secured credentials
  * @property {string=} name name of the node
@@ -216,6 +219,7 @@
  * @property {string=} z Internal. uid of ???
  * @property {string=} g Internal. uid of ???
  * @property {[Array<string>]=} wires Internal. Array of Array of strings. The wires attached to this node instance (uid's)
+ * @property {string=} path Internal. The path to the node instance
  *
  * @property {number=} _wireCount Count of connected wires
  * @property {string=} _wire ID of connected wire
@@ -289,7 +293,23 @@
  * @property {string} targetType The type of output to send to the Editor's debug sidebar
  * @property {string} statusVal The value to send to the Editor's status bar
  * @property {string} statusType The type of value to send to the Editor's status
+ * @property {string} editExpression The JSONata expression to apply to the incoming message
+ * @property {number} counter - Tracks the count for the node instance
+ * @property {number} lastTime - Timestamp of last update
+ * @property {NodeJS.Timeout|null} timeout - Timeout handler
+ * @property {string} [oldState] - Previous state for status
+ * @property {any=} preparedEditExpression Prepared JSONata expression for editor (optional)
+ * @property {any=} preparedStatExpression Prepared JSONata expression for status (optional)
+ * @property {boolean=} isDebugging Whether the node is currently debugging or not (optional)
  */
+
+/** runtimeDebugOutput
+ * @typedef {object} runtimeDebugOutput Extra props for debug output
+ *
+ * @property {string=} topic The topic to override the incoming msg.topic to send to debug only
+ * @property {object=} msg Copy of the incoming msg object to send to debug only
+ */
+
 
 /** tiDummyNode
  * @typedef {object} tiDummyNode A dummy custom node to play with
